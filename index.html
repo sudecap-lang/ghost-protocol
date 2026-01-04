@@ -2,18 +2,28 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
-    <title>System</title>
+    <title>GHOST_OS</title>
 </head>
 <body>
-    <div id="status-bar">PROTOCOLO STEALTH: ATIVO</div>
-    
-    <main>
-        <button onclick="toggleScrub()">LIMPAR RASTROS</button>
-        <button onclick="generateDeadMan()">DEAD MAN SWITCH</button>
-        <div id="console">Aguardando comando...</div>
+    <div id="scan-line"></div>
+    <header>
+        <div class="status-indicator">● SYSTEM_ACTIVE</div>
+        <div class="location-mask">IP_ENCRYPTED: 127.0.0.1</div>
+    </header>
+
+    <main id="app-container">
+        <div id="terminal-output">> INICIALIZANDO PROTOCOLO GHOST...</div>
+        
+        <div class="action-grid">
+            <button class="btn-tactical" onclick="runPrivacyScrub()">SCRUB METADATA</button>
+            <button class="btn-tactical" onclick="toggleStealth()">GHOST MODE</button>
+            <button class="btn-emergency" onclick="emergencyWipe()">EMERGENCY WIPE</button>
+        </div>
     </main>
 
     <script src="app.js"></script>
