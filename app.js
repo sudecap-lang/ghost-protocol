@@ -1,5 +1,5 @@
-// --- CONFIGURAÇÃO DE AGENTE ---
-const SECRET_PASS = "77 Abacate 77*"; // ALTERA AQUI A TUA SENHA
+// --- AGENT CONFIGURATION ---
+const SECRET_PASS = "77 Abacate 77*"; // CHANGE YOUR PASSWORD HERE
 let attemptCounter = 0;
 // ------------------------------
 
@@ -20,14 +20,14 @@ function checkCommand(event) {
         if (cmd === SECRET_PASS) {
             attemptCounter = 0;
             document.getElementById('secret-vault').style.display = 'block';
-            logTerminal("ACESSO CONCEDIDO: COFRE ABERTO", "#00ff64");
+            logTerminal("ACCESS GRANTED: VAULT OPENED", "#00ff64");
         } else {
             attemptCounter++;
             const remains = 3 - attemptCounter;
-            logTerminal(`ERRO: CREDENCIAIS INVÁLIDAS (${remains} TENTATIVAS RESTANTES)`, "#ff4b2b");
+            logTerminal(`ERROR: INVALID CREDENTIALS (${remains} ATTEMPTS LEFT)`, "#ff4b2b");
             
             if (attemptCounter >= 3) {
-                logTerminal("PROTOCOLO DE SEGURANÇA ATIVADO: APAGANDO TUDO...", "#ff4b2b");
+                logTerminal("SECURITY PROTOCOL ACTIVATED: WIPING DATA...", "#ff4b2b");
                 setTimeout(emergencyWipe, 1000);
             }
         }
@@ -35,25 +35,25 @@ function checkCommand(event) {
 }
 
 function runPrivacyScrub() {
-    logTerminal("LIMPANDO METADADOS E CACHE...");
+    logTerminal("SCRUBBING METADATA AND CACHE...");
     if (window.history.replaceState) {
         window.history.replaceState({}, document.title, "/");
     }
-    setTimeout(() => logTerminal("SISTEMA HIGIENIZADO."), 1000);
+    setTimeout(() => logTerminal("SYSTEM SANITIZED."), 1000);
 }
 
 function toggleStealth() {
-    logTerminal("CAMUFLAGEM GHOST ATIVADA.");
+    logTerminal("GHOST CLOAK ACTIVATED.");
     document.body.style.filter = "brightness(0.5) contrast(1.4) sepia(0.3)";
 }
 
 function emergencyWipe() {
     localStorage.clear();
     sessionStorage.clear();
-    document.body.innerHTML = "<h1 style='color:white; text-align:center; margin-top:50%;'>SYSTEM_OFFLINE</h1>";
+    document.body.innerHTML = "<h1 style='color:white; text-align:center; margin-top:50%; font-family:monospace;'>SYSTEM_OFFLINE</h1>";
     setTimeout(() => {
-        window.location.replace("https://www.google.com/search?q=tempo+lisboa");
+        window.location.replace("https://www.google.com");
     }, 1500);
 }
 
-logTerminal("LINK SEGURO ESTABELECIDO.");
+logTerminal("SECURE LINK ESTABLISHED.");
