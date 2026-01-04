@@ -10,30 +10,25 @@
     <title>GHOST_OS</title>
 </head>
 <body>
-    <div class="background-glow"></div>
-    
-    <div class="glass-container">
-        <div class="profile-section">
-            <div class="avatar-circle">
-                <img src="https://cdn-icons-png.flaticon.com/512/554/554585.png" alt="Agent">
-            </div>
-            <p class="status-text">AGENT IDENTITY VERIFIED</p>
-        </div>
+    <div id="scan-line"></div>
+    <header>
+        <div class="status-indicator">● SYSTEM_ACTIVE</div>
+        <div class="location-mask">IP_ENCRYPTED: 127.0.0.1</div>
+    </header>
 
-        <div class="terminal-view" id="terminal-output">
-            > SYSTEM READY...
-        </div>
-
+    <main id="app-container">
+        <div id="terminal-output">> SISTEMA OPERACIONAL GHOST CARREGADO...</div>
+        
         <div class="action-grid">
-            <button class="btn-main" onclick="runPrivacyScrub()">SCRUB METADATA</button>
-            <button class="btn-main" onclick="toggleStealth()">GHOST MODE</button>
-            <button class="btn-emergency" onclick="emergencyWipe()">EMERGENCY WIPE</button>
+            <button class="btn-tactical" onclick="runPrivacyScrub()">LIMPAR RASTROS</button>
+            <button class="btn-tactical" onclick="toggleStealth()">MODO GHOST</button>
+            <button class="btn-emergency" onclick="emergencyWipe()">DESTRUIÇÃO TOTAL</button>
         </div>
         
-        <div class="footer-info">
-            SECURE CONNECTION: 256-BIT AES
-        </div>
-    </div>
+        <p style="color: #666; font-size: 10px; margin-top: 20px; text-align: center;">
+            Para reverter ajustes: Ajustes > Geral > VPN e Dispositivos
+        </p>
+    </main>
 
     <script src="app.js"></script>
 </body>
