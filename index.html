@@ -13,21 +13,25 @@
     <div id="scan-line"></div>
     <header>
         <div class="status-indicator">● SYSTEM_ACTIVE</div>
-        <div class="location-mask">IP_ENCRYPTED: 127.0.0.1</div>
+        <div class="location-mask">ENCRYPTED_DNS: ENABLED</div>
     </header>
 
     <main id="app-container">
-        <div id="terminal-output">> SISTEMA OPERACIONAL GHOST CARREGADO...</div>
-        
-        <div class="action-grid">
-            <button class="btn-tactical" onclick="runPrivacyScrub()">LIMPAR RASTROS</button>
-            <button class="btn-tactical" onclick="toggleStealth()">MODO GHOST</button>
-            <button class="btn-emergency" onclick="emergencyWipe()">DESTRUIÇÃO TOTAL</button>
+        <div class="terminal-box" id="terminal-output">
+            > INICIALIZANDO PROTOCOLO GHOST...
+            <br>> AGENTE AUTORIZADO.
         </div>
         
-        <p style="color: #666; font-size: 10px; margin-top: 20px; text-align: center;">
-            Para reverter ajustes: Ajustes > Geral > VPN e Dispositivos
-        </p>
+        <div class="action-grid">
+            <button class="btn-tactical" onclick="runPrivacyScrub()">SCRUB METADATA</button>
+            <button class="btn-tactical" onclick="toggleStealth()">GHOST MODE</button>
+            <button class="btn-emergency" onclick="emergencyWipe()">EMERGENCY WIPE</button>
+        </div>
+
+        <section class="revert-info">
+            <h3>PARA REVERTER AJUSTES:</h3>
+            <p>Ajustes > Geral > VPN e Dispositivos > Ghost Suite > Remover Perfil</p>
+        </section>
     </main>
 
     <script src="app.js"></script>
