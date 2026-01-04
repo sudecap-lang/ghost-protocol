@@ -1,7 +1,7 @@
-// --- FIELD AGENT CONFIG ---
-const SECRET_PASS = "77 Abacate 77*"; 
-let attemptCounter = 0;
-// --------------------------
+// --- FIELD AGENT CONFIGURATION ---
+const SECRET_PASS = "1234"; 
+const NEXT_DNS_DASHBOARD = "https://my.nextdns.io"; // Shortcut to your logs
+// ---------------------------------
 
 const terminal = document.getElementById('terminal-display');
 
@@ -20,33 +20,31 @@ function checkCommand(event) {
         if (cmd === SECRET_PASS) {
             document.getElementById('secret-vault').style.display = 'block';
             logTerminal("AUTH_SUCCESS: VAULT_DECRYPTED", "#00ff64");
+            logTerminal("ADVISORY: MONITOR_LOGS_AT_NEXTDNS", "#ff9500");
+        } else if (cmd === "logs") {
+            window.open(NEXT_DNS_DASHBOARD, '_blank');
         } else {
-            attemptCounter++;
-            logTerminal(`AUTH_ERR: ATTEMPT ${attemptCounter}/3`, "#ff3b30");
-            if (attemptCounter >= 3) emergencyWipe();
+            logTerminal("AUTH_FAILURE: ATTEMPT_LOGGED", "#ff3b30");
         }
     }
 }
 
 function runPrivacyScrub() {
-    logTerminal("FLUSHING_RAM_CACHE...");
+    logTerminal("INITIATING_RAM_FLUSH...");
     localStorage.clear();
     sessionStorage.clear();
-    // Injecting fake state to confuse trackers
-    window.history.replaceState({}, '', `?ref=secure_${Math.floor(Math.random()*1000)}`);
-    logTerminal("METADATA_PURGED. TRACE_CLEAN.");
+    logTerminal("DUMMY_DATA_INJECTED. SYSTEM_READY.");
 }
 
 function toggleStealth() {
-    logTerminal("CLOAKING_INTERFACE...");
+    logTerminal("STEALTH_LAYER_ENGAGED.");
     document.body.style.filter = "grayscale(1) brightness(0.3) contrast(1.5)";
 }
 
 function emergencyWipe() {
-    logTerminal("PANIC: DESTROYING_ALL_LOCAL_DATA...");
     localStorage.clear();
-    sessionStorage.clear();
     window.location.replace("https://www.reuters.com");
 }
 
-logTerminal("SECURE_LINK_READY.");
+logTerminal("SYSTEM_V5.8_ACTIVE.");
+logTerminal("DNS_TUNNEL_ESTABLISHED.");
