@@ -1,5 +1,5 @@
 // --- FIELD AGENT CONFIGURATION ---
-const SECRET_PASS = "1234"; 
+const SECRET_PASS = "77 Abacate 77*"; 
 const NEXT_DNS_DASHBOARD = "https://my.nextdns.io"; // Shortcut to your logs
 // ---------------------------------
 
@@ -48,3 +48,4 @@ function emergencyWipe() {
 
 logTerminal("SYSTEM_V5.8_ACTIVE.");
 logTerminal("DNS_TUNNEL_ESTABLISHED.");
+
