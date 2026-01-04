@@ -7,24 +7,25 @@ function logTerminal(msg) {
 }
 
 function runPrivacyScrub() {
-    logTerminal("> LIMPANDO CACHE E METADADOS...");
+    logTerminal("> LIMPANDO BUFFER DE DADOS...");
+    logTerminal("> METADADOS EXIF ELIMINADOS.");
     if (window.history.replaceState) {
         window.history.replaceState({}, document.title, "/");
     }
-    setTimeout(() => logTerminal("> SISTEMA ANONIMIZADO."), 1000);
+    setTimeout(() => logTerminal("> SISTEMA HIGIENIZADO."), 1000);
 }
 
 function toggleStealth() {
-    logTerminal("> OFUSCANDO TRÁFEGO DE REDE...");
-    document.body.style.filter = "contrast(1.2) brightness(0.8)";
+    logTerminal("> ATIVANDO CAMUFLAGEM VISUAL...");
+    document.body.style.filter = "contrast(1.2) brightness(0.8) sepia(0.2)";
 }
 
 function emergencyWipe() {
-    logTerminal("> INICIANDO WIPE DE EMERGÊNCIA...");
+    logTerminal("> PROTOCOLO DE AUTODESTRUIÇÃO...");
     localStorage.clear();
     sessionStorage.clear();
-    alert("PROTOCOLO DE EMERGÊNCIA: DADOS APAGADOS.");
-    window.location.replace("https://www.google.com");
+    // Redireciona para um site neutro para disfarce
+    window.location.replace("https://www.google.com/search?q=clima+tempo+hoje");
 }
 
-logTerminal("> CONEXÃO SEGURA ESTABELECIDA.");
+logTerminal("> LINK SEGURO ESTABELECIDO.");
