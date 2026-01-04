@@ -7,38 +7,38 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
-    <title>GHOST_OS</title>
+    <title>GHOST_PROT_V5</title>
 </head>
 <body>
-    <div class="glow-overlay"></div>
     <div class="glass-panel">
-        <div class="agent-profile">
-            <div class="avatar"></div>
-            <div class="id-tag">
-                <span class="label">SECURE_ID</span>
-                <span class="id-code">AGENT_GHOST_2026</span>
-            </div>
-        </div>
+        <header>
+            <div class="stream-status">STREAM: <span id="pulse">●</span> ENCRYPTED</div>
+            <div class="agent-id">ID: GHOST_0401</div>
+        </header>
 
         <div class="terminal-container" id="terminal-display">
-            > STANDBY... SECURE LINK ACTIVE.
+            > KERNEL_LOADED: V5.5_ADVANCED
         </div>
 
         <div class="vault-area" id="secret-vault" style="display: none;">
-            <p>📁 ENCRYPTED_VAULT</p>
-            <small>● Intel_Package_A.pdf</small><br>
-            <small>● Signal_Nodes.key</small>
+            <p>📁 SECURE_VAULT_OPEN</p>
+            <small>> Internal_Memo_01.pdf</small><br>
+            <small>> Shadow_Nodes.key</small>
         </div>
 
         <div class="input-group">
-            <input type="password" id="command-input" placeholder="PASSKEY" onkeydown="checkCommand(event)">
+            <input type="password" id="command-input" placeholder="ACCESS_KEY" onkeydown="checkCommand(event)">
         </div>
 
         <div class="btn-grid">
-            <button class="btn-action" onclick="runPrivacyScrub()">SCRUB DATA</button>
-            <button class="btn-action" onclick="toggleStealth()">GHOST MODE</button>
-            <button class="btn-danger" onclick="emergencyWipe()">EMERGENCY WIPE</button>
+            <button class="btn-action" onclick="runPrivacyScrub()">SCRUB_MEMORY</button>
+            <button class="btn-action" onclick="toggleStealth()">GHOST_CLOAK</button>
+            <button class="btn-danger" onclick="emergencyWipe()">EMERGENCY_WIPE</button>
         </div>
+        
+        <footer style="margin-top: 15px; font-size: 8px; color: #444;">
+            SURVEILLANCE_BYPASS_ACTIVE
+        </footer>
     </div>
     <script src="app.js"></script>
 </body>
