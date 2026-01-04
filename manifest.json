@@ -1,9 +1,16 @@
 {
-  "manifest_version": 3,
-  "name": "System Security",
+  "name": "Ghost Protocol",
   "short_name": "Ghost",
-  "start_url": "/index.html",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#000000",
-  "theme_color": "#000000"
+  "theme_color": "#00ff00",
+  "description": "Terminal de Defesa Tática.",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/554/554585.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
 }
