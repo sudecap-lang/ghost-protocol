@@ -1,9 +1,14 @@
 // --- AGENT CONFIGURATION ---
-const SECRET_PASS = "77 Abacate 77*"; // CHANGE YOUR PASSWORD HERE
+const SECRET_PASS = "77 Abacate 77*"; 
 let attemptCounter = 0;
 // ------------------------------
 
 const terminal = document.getElementById('terminal-display');
+
+// Heartbeat simulator
+setInterval(() => {
+    if (Math.random() > 0.8) logTerminal("ENCRYPTED_PACKET_SENT", "#444");
+}, 5000);
 
 function logTerminal(msg, color = "#00f2ff") {
     const time = new Date().toLocaleTimeString();
@@ -18,42 +23,33 @@ function checkCommand(event) {
         input.value = '';
 
         if (cmd === SECRET_PASS) {
-            attemptCounter = 0;
             document.getElementById('secret-vault').style.display = 'block';
-            logTerminal("ACCESS GRANTED: VAULT OPENED", "#00ff64");
+            logTerminal("AUTH_SUCCESS: DECRYPTING_VAULT...", "#00ff64");
         } else {
             attemptCounter++;
-            const remains = 3 - attemptCounter;
-            logTerminal(`ERROR: INVALID CREDENTIALS (${remains} ATTEMPTS LEFT)`, "#ff4b2b");
-            
-            if (attemptCounter >= 3) {
-                logTerminal("SECURITY PROTOCOL ACTIVATED: WIPING DATA...", "#ff4b2b");
-                setTimeout(emergencyWipe, 1000);
-            }
+            logTerminal(`AUTH_FAILURE: ATTEMPT ${attemptCounter}/3`, "#ff4b2b");
+            if (attemptCounter >= 3) emergencyWipe();
         }
     }
 }
 
 function runPrivacyScrub() {
-    logTerminal("SCRUBBING METADATA AND CACHE...");
-    if (window.history.replaceState) {
-        window.history.replaceState({}, document.title, "/");
-    }
-    setTimeout(() => logTerminal("SYSTEM SANITIZED."), 1000);
+    logTerminal("INITIATING_DEEP_CLEAN...");
+    logTerminal("FLUSHING_DNS_CACHE...");
+    logTerminal("PURGING_LOCAL_STORAGE...");
+    localStorage.clear();
+    logTerminal("SCRUB_COMPLETE. RAM_CLEAN.");
 }
 
 function toggleStealth() {
-    logTerminal("GHOST CLOAK ACTIVATED.");
-    document.body.style.filter = "brightness(0.5) contrast(1.4) sepia(0.3)";
+    logTerminal("GHOST_CLOAK_ENGAGED. UI_FADING.");
+    document.body.style.filter = "brightness(0.4) contrast(1.2) grayscale(0.5)";
 }
 
 function emergencyWipe() {
-    localStorage.clear();
+    logTerminal("PANIC_PROTOCOL_ALPHA: DESTROYING_SESSION...");
     sessionStorage.clear();
-    document.body.innerHTML = "<h1 style='color:white; text-align:center; margin-top:50%; font-family:monospace;'>SYSTEM_OFFLINE</h1>";
-    setTimeout(() => {
-        window.location.replace("https://www.google.com");
-    }, 1500);
+    localStorage.clear();
+    document.body.innerHTML = "<div style='background:#000; color:#f00; height:100vh; display:flex; align-items:center; justify-content:center; font-family:monospace;'>NO_SIGNAL</div>";
+    setTimeout(() => window.location.replace("https://www.google.com"), 1000);
 }
-
-logTerminal("SECURE LINK ESTABLISHED.");
