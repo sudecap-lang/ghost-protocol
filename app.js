@@ -6,40 +6,26 @@ function logTerminal(msg) {
     output.scrollTop = output.scrollHeight;
 }
 
-// Limpeza de rastros de navegação simulada
 function runPrivacyScrub() {
-    logTerminal("> LIMPANDO CACHE DE NAVEGAÇÃO...");
-    logTerminal("> REMOVENDO METADADOS EXIF...");
+    logTerminal("> INICIANDO LIMPEZA DE METADADOS...");
+    // Simula remoção de telemetria
     if (window.history.replaceState) {
         window.history.replaceState({}, document.title, "/");
     }
-    setTimeout(() => logTerminal("> SISTEMA LIMPO."), 1500);
+    setTimeout(() => logTerminal("> RASTROS ELIMINADOS."), 1000);
 }
 
-// Modo Ghost (Bloqueio de visibilidade)
 function toggleStealth() {
     logTerminal("> ATIVANDO OFUSCAÇÃO DE TRÁFEGO...");
-    document.body.style.filter = "contrast(1.5) brightness(0.7)";
+    document.body.style.filter = "contrast(1.2) brightness(0.8)";
 }
 
-// Função de Emergência: Limpa tudo e redireciona para disfarce
 function emergencyWipe() {
-    logTerminal("> INICIANDO DESTRUIÇÃO DE DADOS LOCAL...");
-    localStorage.clear();
-    sessionStorage.clear();
-    alert("PROTOCOLO DE EMERGÊNCIA ATIVADO");
-    window.location.replace("https://www.google.com/search?q=tempo+hoje");
+    if(confirm("CONFIRMAR DESTRUIÇÃO DE DADOS?")) {
+        localStorage.clear();
+        sessionStorage.clear();
+        window.location.replace("https://www.google.com");
+    }
 }
 
-// Log inicial
-logTerminal("> CONEXÃO SEGURA ESTABELECIDA.");
-logTerminal("> AGUARDANDO COMANDOS.");
-
-// Mantém funções de remoção de trackers de vídeos (estilo AdBlocker)
-setInterval(() => {
-    const blockers = ['ytd-enforcement-message-view-model', 'tp-yt-paper-dialog'];
-    blockers.forEach(sel => {
-        const el = document.querySelector(sel);
-        if (el) el.remove();
-    });
-}, 1000);
+logTerminal("> PROTOCOLO GHOST CONECTADO.");
