@@ -10,21 +10,30 @@
     <title>GHOST_OS</title>
 </head>
 <body>
-    <div id="scan-line"></div>
-    <header>
-        <div class="status-indicator">● SYSTEM_ACTIVE</div>
-        <div class="location-mask">IP_ENCRYPTED: 127.0.0.1</div>
-    </header>
+    <div class="background-glow"></div>
+    
+    <div class="glass-container">
+        <div class="profile-section">
+            <div class="avatar-circle">
+                <img src="https://cdn-icons-png.flaticon.com/512/554/554585.png" alt="Agent">
+            </div>
+            <p class="status-text">AGENT IDENTITY VERIFIED</p>
+        </div>
 
-    <main id="app-container">
-        <div id="terminal-output">> INICIALIZANDO PROTOCOLO GHOST...</div>
-        
+        <div class="terminal-view" id="terminal-output">
+            > SYSTEM READY...
+        </div>
+
         <div class="action-grid">
-            <button class="btn-tactical" onclick="runPrivacyScrub()">SCRUB METADATA</button>
-            <button class="btn-tactical" onclick="toggleStealth()">GHOST MODE</button>
+            <button class="btn-main" onclick="runPrivacyScrub()">SCRUB METADATA</button>
+            <button class="btn-main" onclick="toggleStealth()">GHOST MODE</button>
             <button class="btn-emergency" onclick="emergencyWipe()">EMERGENCY WIPE</button>
         </div>
-    </main>
+        
+        <div class="footer-info">
+            SECURE CONNECTION: 256-BIT AES
+        </div>
+    </div>
 
     <script src="app.js"></script>
 </body>
