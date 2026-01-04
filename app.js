@@ -1,34 +1,32 @@
-// --- AGENT CONFIGURATION ---
+// --- ADVANCED AGENT CONFIG ---
 const SECRET_PASS = "77 Abacate 77*"; 
 let attemptCounter = 0;
-let sessionTimeout;
-const AUTO_DESTRUCT_TIME = 5 * 60 * 1000; // 5 Minutes in milliseconds
+let sessionTimer;
+const SESSION_EXPIRY = 300000; // 5 minutes
 // ------------------------------
 
 const terminal = document.getElementById('terminal-display');
 
-function logTerminal(msg, color = "#00f2ff") {
+function logTerminal(msg, color = "#34c759") {
     const time = new Date().toLocaleTimeString();
     terminal.innerHTML += `<br><span style="color: ${color}">[${time}] > ${msg}</span>`;
     terminal.scrollTop = terminal.scrollHeight;
 }
 
-// AUTO-DESTRUCT LOGIC
+// Advanced Auto-Lock on Visibility Change
 document.addEventListener("visibilitychange", () => {
     if (document.hidden) {
-        logTerminal("APP_MINIMIZED: STARTING_AUTO_DESTRUCT_TIMER...", "#ffaa00");
-        sessionTimeout = setTimeout(() => {
-            lockVault();
-        }, AUTO_DESTRUCT_TIME);
+        sessionTimer = setTimeout(lockVault, SESSION_EXPIRY);
+        logTerminal("BG_MODE: SESSION_EXPIRY_TIMER_START", "#ff9500");
     } else {
-        clearTimeout(sessionTimeout);
-        logTerminal("APP_RESUMED: SESSION_PROTECTED.");
+        clearTimeout(sessionTimer);
+        logTerminal("RESUMED: SESSION_VALID.");
     }
 });
 
 function lockVault() {
     document.getElementById('secret-vault').style.display = 'none';
-    logTerminal("SECURITY_ALERT: SESSION_EXPIRED. VAULT_LOCKED.", "#ff4b2b");
+    logTerminal("SECURITY_EVENT: AUTO_LOCK_EXECUTED", "#ff3b30");
 }
 
 function checkCommand(event) {
@@ -38,32 +36,39 @@ function checkCommand(event) {
         input.value = '';
 
         if (cmd === SECRET_PASS) {
+            attemptCounter = 0;
             document.getElementById('secret-vault').style.display = 'block';
-            logTerminal("AUTH_SUCCESS: ACCESS_GRANTED.", "#00ff64");
+            logTerminal("ENCRYPTION_KEY_ACCEPTED.", "#34c759");
         } else {
             attemptCounter++;
-            logTerminal(`AUTH_FAILURE: ATTEMPT ${attemptCounter}/3`, "#ff4b2b");
+            logTerminal(`AUTH_ERR: ${3-attemptCounter} ATTEMPTS REMAINING`, "#ff3b30");
             if (attemptCounter >= 3) emergencyWipe();
         }
     }
 }
 
 function runPrivacyScrub() {
-    logTerminal("PURGING_LOCAL_CACHE...");
+    logTerminal("SCRUBBING_LOCAL_RAM...");
     localStorage.clear();
-    logTerminal("METADATA_CLEANED.");
+    sessionStorage.clear();
+    // Anti-forensic dummy history filling
+    for(let i=0; i<5; i++) {
+        window.history.pushState({}, '', `?id=${Math.random().toString(36).substring(7)}`);
+    }
+    logTerminal("SCRUB_COMPLETE. DUMMY_TRAILS_INJECTED.");
 }
 
 function toggleStealth() {
-    logTerminal("GHOST_MODE_ACTIVE.");
-    document.body.style.filter = "brightness(0.5) contrast(1.2) grayscale(0.8)";
+    logTerminal("GHOST_LAYER: VISUAL_CLOAKING_ACTIVE.");
+    document.body.style.filter = "grayscale(1) brightness(0.4) contrast(1.2)";
 }
 
 function emergencyWipe() {
+    logTerminal("CRITICAL: DESTROYING_SESSION...");
     localStorage.clear();
     sessionStorage.clear();
-    document.body.innerHTML = "<div style='background:#000; color:#f00; height:100vh; display:flex; align-items:center; justify-content:center; font-family:monospace;'>DATA_PURGED</div>";
-    setTimeout(() => window.location.replace("https://www.google.com"), 1000);
+    // Redirect to a neutral news site
+    window.location.replace("https://www.reuters.com");
 }
 
-logTerminal("SECURE_OS_LOADED.");
+logTerminal("SYSTEM_INIT: LEVEL_ADVANCED_ACTIVE.");
