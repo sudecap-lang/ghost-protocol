@@ -1,0 +1,25 @@
+body {
+    background-color: black;
+    color: #ff0000;
+    font-family: monospace;
+    margin: 0;
+    overflow: hidden;
+    -webkit-touch-callout: none; /* Bloqueia menus do iOS */
+}
+
+#status-bar {
+    border-bottom: 1px solid #300;
+    padding: 10px;
+    font-size: 12px;
+    text-align: center;
+}
+
+button {
+    background: transparent;
+    border: 1px solid #ff0000;
+    color: #ff0000;
+    width: 90%;
+    margin: 10px 5%;
+    padding: 15px;
+    font-weight: bold;
+}
