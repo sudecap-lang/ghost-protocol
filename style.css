@@ -1,74 +1,53 @@
 :root {
-    --accent-red: #ff4b2b;
-    --accent-purple: #6a11cb;
-    --neon-cyan: #00f2ff;
+    --accent-red: #ff3b30;
+    --accent-purple: #5856d6;
+    --neon-green: #34c759;
 }
 
 body {
     margin: 0; padding: 0; height: 100vh;
-    background: radial-gradient(circle at 50% 10%, #2b0a3d, #000);
+    background: #000;
+    background-image: radial-gradient(circle at 50% 10%, #1c1c1e, #000);
     display: flex; align-items: center; justify-content: center;
     font-family: 'SF Mono', 'Courier New', monospace;
     overflow: hidden;
-}
-
-.glow-overlay {
-    position: absolute; width: 100%; height: 100%;
-    background: radial-gradient(circle at 80% 80%, rgba(255, 0, 80, 0.1), transparent);
-    pointer-events: none;
+    transition: filter 0.5s ease;
 }
 
 .glass-panel {
     width: 85%; max-width: 360px;
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(25px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 45px;
+    background: rgba(30, 30, 30, 0.7);
+    backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 40px;
     padding: 30px;
-    box-shadow: 0 40px 100px rgba(0,0,0,0.6);
-    text-align: center;
+    box-shadow: 0 50px 100px rgba(0,0,0,0.9);
 }
-
-.avatar {
-    width: 70px; height: 70px; margin: 0 auto 10px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 50%; border: 1px solid rgba(255,255,255,0.2);
-}
-
-.id-tag .label { font-size: 8px; color: rgba(255,255,255,0.4); display: block; }
-.id-tag .id-code { font-size: 14px; color: #fff; letter-spacing: 2px; }
 
 .terminal-container {
-    height: 90px; background: rgba(0,0,0,0.4);
-    margin: 20px 0; border-radius: 15px;
-    padding: 12px; font-size: 11px; color: var(--neon-cyan);
+    height: 100px; background: rgba(0,0,0,0.6);
+    margin: 20px 0; border-radius: 12px;
+    padding: 10px; font-size: 10px; color: var(--neon-green);
     text-align: left; overflow-y: auto;
-}
-
-.vault-area {
-    background: rgba(0, 255, 100, 0.1);
-    border: 1px dashed #00ff64; border-radius: 10px;
-    padding: 10px; margin-bottom: 15px; font-size: 12px; color: #00ff64;
-    text-align: left;
+    border: 1px solid rgba(52, 199, 89, 0.2);
 }
 
 .input-group input {
-    width: 90%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 10px; padding: 12px; color: #fff;
-    margin-bottom: 15px; text-align: center; font-family: inherit; outline: none;
+    width: 100%; background: #000; border: 1px solid #333;
+    border-radius: 12px; padding: 12px; color: #fff;
+    margin-bottom: 15px; text-align: center; font-size: 16px;
 }
 
 .btn-action {
-    width: 100%; padding: 15px; margin: 5px 0;
-    border: none; border-radius: 18px;
-    background: linear-gradient(135deg, var(--accent-purple), #2575fc);
-    color: white; font-weight: bold; font-size: 12px;
+    width: 100%; padding: 16px; margin: 6px 0;
+    border: none; border-radius: 14px;
+    background: #1c1c1e; color: #fff;
+    font-weight: bold; font-size: 13px;
+    border: 1px solid rgba(255,255,255,0.1);
 }
 
 .btn-danger {
-    width: 100%; padding: 12px; margin-top: 10px;
-    border: 1px solid rgba(255, 75, 43, 0.4);
-    background: transparent; color: var(--accent-red);
-    border-radius: 18px; font-size: 11px;
-    font-weight: bold;
+    width: 100%; padding: 16px; margin-top: 10px;
+    background: var(--accent-red); color: #fff;
+    border: none; border-radius: 14px; font-weight: bold;
 }
