@@ -10,29 +10,40 @@
     <title>GHOST_OS</title>
 </head>
 <body>
-    <div class="glow-bg"></div>
-    <div class="glass-card">
-        <div class="profile-header">
-            <div class="avatar-box"></div>
-            <div class="id-info">
-                <span class="label">AGENT_ID</span>
-                <span class="value">GHOST-9-2026</span>
+    <div class="glow-overlay"></div>
+    
+    <div class="glass-panel">
+        <div class="agent-profile">
+            <div class="avatar"></div>
+            <div class="id-tag">
+                <span class="label">SECURE_ID</span>
+                <span class="id-code">AGENT_GHOST_2026</span>
             </div>
         </div>
 
-        <div id="terminal-output">> ENCRYPTED_CHANNEL_OPEN...</div>
-
-        <div class="action-buttons">
-            <button class="btn-primary" onclick="runPrivacyScrub()">SCRUB_METADATA</button>
-            <button class="btn-primary" onclick="toggleStealth()">GHOST_PROXIMITY</button>
-            <button class="btn-danger" onclick="emergencyWipe()">EMERGENCY_WIPE</button>
+        <div class="terminal-container" id="terminal-display">
+            > SISTEMA OPERACIONAL INICIALIZADO...
         </div>
 
-        <div class="security-status">
-            <div class="status-item"><span>DNS:</span> <span class="active">PROTECTED</span></div>
-            <div class="status-item"><span>SSL:</span> <span class="active">ACTIVE</span></div>
+        <div class="vault-area" id="secret-vault" style="display: none;">
+            <p>📁 ARQUIVOS CONFIDENCIAIS LIBERADOS</p>
+            <ul>
+                <li>● Operação_Sombra.pdf</li>
+                <li>● Contatos_Extração.key</li>
+            </ul>
+        </div>
+
+        <div class="input-group">
+            <input type="text" id="command-input" placeholder="DIGITE O COMANDO..." onkeydown="checkCommand(event)">
+        </div>
+
+        <div class="btn-grid">
+            <button class="btn-action" onclick="runPrivacyScrub()">SCRUB DATA</button>
+            <button class="btn-action" onclick="toggleStealth()">GHOST MODE</button>
+            <button class="btn-danger" onclick="emergencyWipe()">EMERGENCY WIPE</button>
         </div>
     </div>
+
     <script src="app.js"></script>
 </body>
 </html>
