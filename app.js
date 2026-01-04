@@ -7,25 +7,24 @@ function logTerminal(msg) {
 }
 
 function runPrivacyScrub() {
-    logTerminal("> INICIANDO LIMPEZA DE METADADOS...");
-    // Simula remoção de telemetria
+    logTerminal("> LIMPANDO CACHE E METADADOS...");
     if (window.history.replaceState) {
         window.history.replaceState({}, document.title, "/");
     }
-    setTimeout(() => logTerminal("> RASTROS ELIMINADOS."), 1000);
+    setTimeout(() => logTerminal("> SISTEMA ANONIMIZADO."), 1000);
 }
 
 function toggleStealth() {
-    logTerminal("> ATIVANDO OFUSCAÇÃO DE TRÁFEGO...");
+    logTerminal("> OFUSCANDO TRÁFEGO DE REDE...");
     document.body.style.filter = "contrast(1.2) brightness(0.8)";
 }
 
 function emergencyWipe() {
-    if(confirm("CONFIRMAR DESTRUIÇÃO DE DADOS?")) {
-        localStorage.clear();
-        sessionStorage.clear();
-        window.location.replace("https://www.google.com");
-    }
+    logTerminal("> INICIANDO WIPE DE EMERGÊNCIA...");
+    localStorage.clear();
+    sessionStorage.clear();
+    alert("PROTOCOLO DE EMERGÊNCIA: DADOS APAGADOS.");
+    window.location.replace("https://www.google.com");
 }
 
-logTerminal("> PROTOCOLO GHOST CONECTADO.");
+logTerminal("> CONEXÃO SEGURA ESTABELECIDA.");
