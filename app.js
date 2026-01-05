@@ -11,23 +11,43 @@ function logTerminal(msg, color = "#00ffaa") {
     output.scrollTop = output.scrollHeight;
 }
 
-// Verifica se o DNS 6ddbfb é o único mestre
+// 1. FUNÇÃO PARA OS BOTÕES (CORRIGIDA)
+function runPrivacyScrub() {
+    logTerminal("DESTRUINDO METADADOS...", "#ff9500");
+    localStorage.clear();
+    sessionStorage.clear();
+    logTerminal("LIMPEZA CONCLUÍDA.", "#34c759");
+}
+
+function toggleStealth() {
+    logTerminal("MODO GHOST ATIVADO.", "#00ff00");
+    document.body.style.filter = "brightness(0.3) contrast(1.2) grayscale(1)";
+}
+
+function emergencyWipe() {
+    logTerminal("PROTOCOLO DE PÂNICO!", "#ff3b30");
+    localStorage.clear();
+    window.location.replace("https://www.reuters.com");
+}
+
+// 2. VERIFICAÇÃO DE SISTEMA
 async function checkSystemIntegrity() {
     try {
-        const res = await fetch('https://test.nextdns.io');
+        // Adicionado timestamp para evitar cache do navegador
+        const res = await fetch(`https://test.nextdns.io/?cacheburst=${Date.now()}`);
         const data = await res.json();
         
-        if (data.status === "ok" && data.configuration === NEXT_DNS_ID) {
-            logTerminal("SISTEMA: PROTEGIDO (TÚNEL 6DDBFB ATIVO)", "#34c759");
+        if (data.status === "ok") {
+            logTerminal("SISTEMA: PROTEGIDO (TÚNEL ATIVO)", "#34c759");
         } else {
-            logTerminal("ALERTA: CONFLITO DE REDE DETECTADO", "#ff3b30");
-            logTerminal("RECOMENDAÇÃO: REMOVA PERFIS ANTIGOS NOS AJUSTES", "#ff9500");
+            logTerminal("ALERTA: REDE EXPOSTA (GIGA MAIS)", "#ff3b30");
         }
     } catch (e) {
-        logTerminal("ERRO: FALHA NA VERIFICAÇÃO DE INTEGRIDADE", "#ff3b30");
+        logTerminal("ERRO: FALHA NA VERIFICAÇÃO", "#ff9500");
     }
 }
 
+// 3. COMANDOS DO TERMINAL
 function checkCommand(event) {
     if (event.key === 'Enter') {
         const input = document.getElementById('command-input');
@@ -35,25 +55,18 @@ function checkCommand(event) {
         input.value = '';
 
         if (cmd.toLowerCase() === "logs") {
-            logTerminal("ABRINDO REGISTROS DE VIGILÂNCIA...", "#ff9500");
             window.open(`https://my.nextdns.io/${NEXT_DNS_ID}/logs`, '_blank');
         } else if (cmd === SECRET_PASS) {
-            logTerminal("ACESSO TOTAL AO COFRE CONCEDIDO", "#00ff00");
+            logTerminal("ACESSO CONCEDIDO", "#00ff00");
             document.getElementById('secret-vault').style.display = 'block';
         } else if (cmd.toLowerCase() === "verify") {
             checkSystemIntegrity();
         } else {
-            logTerminal("ERRO_DE_SISTEMA: COMANDO INVÁLIDO", "#ff3b30");
+            logTerminal("COMANDO INVÁLIDO", "#ff3b30");
         }
     }
 }
 
-function runPrivacyScrub() {
-    logTerminal("DESTRUINDO METADADOS DA SESSÃO...");
-    localStorage.clear();
-    sessionStorage.clear();
-    logTerminal("LIMPEZA CONCLUÍDA.");
-}
-
-logTerminal("GHOST_OS v10.0 ONLINE");
+// Inicialização
+logTerminal("GHOST_OS v10.5 ONLINE");
 checkSystemIntegrity();
