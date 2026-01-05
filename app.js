@@ -6,14 +6,13 @@ const NEXT_DNS_ID = "6ddbfb";
 const output = document.getElementById('terminal-output');
 const vault = document.getElementById('secret-vault');
 
-// BLOQUEIO TOTAL AO INICIAR (Garante que não abra sem senha)
-function lockSystem() {
+// TRAVA DE SEGURANÇA OBRIGATÓRIA
+function secureLock() {
     if (vault) {
         vault.style.display = 'none';
         vault.style.visibility = 'hidden';
         vault.style.opacity = '0';
     }
-    document.body.style.filter = "none";
 }
 
 function logTerminal(msg, color = "#00ffaa") {
@@ -23,10 +22,29 @@ function logTerminal(msg, color = "#00ffaa") {
 }
 
 window.onload = () => {
-    lockSystem(); // Força o fechamento de qualquer sessão antiga
-    logTerminal("GHOST_OS v26.0 - SISTEMA TRANCADO");
-    logTerminal("IDENTIFIQUE-SE PARA ACESSAR O COFRE.");
+    secureLock();
+    logTerminal("GHOST_OS v27.0 ONLINE");
+    logTerminal("STATUS ATUAL: REDE EXPOSTA (GIGA MAIS)", "#ff3b30");
 };
+
+async function runNetworkVerify() {
+    logTerminal("TESTANDO INTEGRIDADE DO TÚNEL...");
+    try {
+        const res = await fetch(`https://test.nextdns.io/?t=${Date.now()}`);
+        const text = await res.text();
+        
+        if (text.includes(NEXT_DNS_ID)) {
+            logTerminal("SINAL: VERDE (PERFIL ATIVO)", "#34c759");
+        } else if (text.includes("GIGA MAIS")) {
+            logTerminal("SINAL: VERMELHO (GIGA MAIS DETECTADA)", "#ff3b30");
+            logTerminal("USE 'VINCULAR IP' NO SITE E REINICIE O WI-FI.", "#ff9500");
+        } else {
+            logTerminal("SINAL: LARANJA (IP OK, TÚNEL AUSENTE)", "#ff9500");
+        }
+    } catch (e) {
+        logTerminal("ERRO: FALHA CRÍTICA DE CONEXÃO", "#ff3b30");
+    }
+}
 
 function checkCommand(event) {
     if (event.key === 'Enter') {
@@ -35,21 +53,19 @@ function checkCommand(event) {
         const cmdClean = cmdRaw.toLowerCase().trim();
         input.value = '';
 
-        // 1. COMANDOS DE SISTEMA
-        if (cmdClean === "logs") {
-            logTerminal("ABRINDO REGISTROS DO ID 6DDBFB...");
+        if (cmdClean === "verify") {
+            runNetworkVerify();
+        } 
+        else if (cmdClean === "logs") {
+            logTerminal("REQUISITANDO ACESSO AOS LOGS...");
             window.open(`https://my.nextdns.io/${NEXT_DNS_ID}/logs`, '_blank');
-        } 
-        else if (cmdClean === "verify") {
-            logTerminal("CHAVE DE REDE: GIGA MAIS DETECTADA (VERMELHO)", "#ff3b30");
-        } 
+        }
         else if (cmdClean === "clear") {
             output.innerHTML = "";
             logTerminal("TERMINAL REINICIADO.");
         }
-        // 2. VALIDAÇÃO RÍGIDA DE SENHA
         else if (cmdRaw === SECRET_PASS) {
-            logTerminal("ACESSO CONCEDIDO.", "#00ff00");
+            logTerminal("CHAVE MESTRA ACEITA.", "#00ff00");
             if (vault) {
                 vault.style.display = 'block';
                 vault.style.visibility = 'visible';
@@ -57,24 +73,19 @@ function checkCommand(event) {
             }
         } 
         else {
-            logTerminal(`ACESSO NEGADO: CHAVE INCORRETA.`, "#ff3b30");
-            lockSystem(); // Tranca tudo se errar
+            logTerminal(`ACESSO NEGADO: '${cmdRaw}'`, "#ff3b30");
+            secureLock();
         }
     }
 }
 
 function runPrivacyScrub() {
-    logTerminal("LIMPANDO DADOS...");
+    logTerminal("DESTRUINDO CACHE...");
     localStorage.clear();
-    sessionStorage.clear();
-    lockSystem(); // Fecha o cofre após a limpeza
-    logTerminal("LIMPEZA CONCLUÍDA E SISTEMA TRANCADO.");
+    secureLock();
+    logTerminal("SISTEMA HIGIENIZADO.");
 }
 
 function toggleStealth() {
-    if (document.body.style.filter.includes("brightness")) {
-        document.body.style.filter = "none";
-    } else {
-        document.body.style.filter = "brightness(0.6) contrast(1.2)";
-    }
+    document.body.style.filter = document.body.style.filter.includes("brightness") ? "none" : "brightness(0.6) contrast(1.2)";
 }
