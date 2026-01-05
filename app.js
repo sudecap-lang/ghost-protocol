@@ -21,10 +21,10 @@ function logTerminal(msg, color = "#00ffaa") {
 
 window.onload = () => {
     forceLock();
-    logTerminal("GHOST_OS v37.0 ONLINE");
+    logTerminal("GHOST_OS v38.0 ONLINE");
 };
 
-// --- OPERATIONAL FUNCTIONS ---
+// --- ACTION FUNCTIONS ---
 
 async function runNetworkVerify() {
     logTerminal("VERIFYING NETWORK TUNNEL...", "#00aaff");
@@ -54,10 +54,21 @@ function runPrivacyScrub() {
 
 function emergencyWipe() {
     localStorage.clear();
+    sessionStorage.clear();
     window.location.replace("https://www.reuters.com");
 }
 
-// --- CORE LOGIC ---
+function toggleStealth() {
+    if (document.body.style.filter.includes("brightness")) {
+        document.body.style.filter = "none";
+        logTerminal("GHOST_MODE: OFF");
+    } else {
+        document.body.style.filter = "brightness(0.6) contrast(1.2)";
+        logTerminal("GHOST_MODE: ON");
+    }
+}
+
+// --- ACCESS LOGIC ---
 
 function checkCommand(event) {
     if (event.key === 'Enter') {
@@ -77,8 +88,4 @@ function checkCommand(event) {
             forceLock();
         }
     }
-}
-
-function toggleStealth() {
-    document.body.style.filter = document.body.style.filter.includes("brightness") ? "none" : "brightness(0.6) contrast(1.2)";
 }
