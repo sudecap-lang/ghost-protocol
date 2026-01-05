@@ -6,8 +6,11 @@ const NEXT_DNS_ID = "6ddbfb";
 const output = document.getElementById('terminal-output');
 const vault = document.getElementById('secret-vault');
 
-// PROTEÇÃO DE INICIALIZAÇÃO
-if (vault) vault.style.display = 'none';
+// RESET DE INTERFACE
+if (vault) {
+    vault.style.display = 'none';
+    vault.style.visibility = 'hidden';
+}
 document.body.style.filter = "none";
 
 function logTerminal(msg, color = "#00ffaa") {
@@ -16,30 +19,24 @@ function logTerminal(msg, color = "#00ffaa") {
     output.scrollTop = output.scrollHeight;
 }
 
+// Função de Verificação (Sem travar o sistema)
 async function runNetworkVerify() {
-    logTerminal("VERIFICANDO INTEGRIDADE DO TÚNEL...", "#00aaff");
+    logTerminal("SOLICITANDO STATUS DE REDE...", "#00aaff");
     try {
-        const res = await fetch(`https://test.nextdns.io/?t=${Date.now()}`);
-        const text = await res.text();
-        
-        if (text.includes(NEXT_DNS_ID)) {
-            logTerminal("SINAL: VERDE (PERFIL 6DDBFB ATIVO)", "#34c759");
-        } else if (text.includes("GIGA MAIS")) {
-            logTerminal("SINAL: VERMELHO (OPERADORA DETECTADA)", "#ff3b30");
-            logTerminal("AÇÃO: REINSTALE O PERFIL DE CONFIGURAÇÃO.", "#ff9500");
-        } else {
-            logTerminal("SINAL: LARANJA (DNS GENÉRICO ATIVO)", "#ff9500");
-        }
+        const res = await fetch(`https://test.nextdns.io/?t=${Date.now()}`, { mode: 'no-cors' });
+        logTerminal("CONEXÃO COM SERVIDOR ESTABELECIDA.");
+        logTerminal("DICA: SE ESTIVER VERMELHO NO SITE, REINSTALE O PERFIL.", "#ff9500");
     } catch (e) {
-        logTerminal("ERRO: FALHA NA COMUNICAÇÃO COM O ESCUDO.", "#ff3b30");
+        logTerminal("ALERTA: REDE 'GIGA MAIS' BLOQUEANDO TESTE.", "#ff3b30");
     }
 }
 
 window.onload = () => {
-    logTerminal("GHOST_OS v24.0 ONLINE");
-    runNetworkVerify();
+    logTerminal("GHOST_OS v25.0 - MODO DE RECUPERAÇÃO");
+    logTerminal("DIGITE 'LOGS' OU A SENHA PARA ACESSAR.");
 };
 
+// LÓGICA DE COMANDO REESCRITA PARA NÃO FALHAR
 function checkCommand(event) {
     if (event.key === 'Enter') {
         const input = document.getElementById('command-input');
@@ -47,27 +44,36 @@ function checkCommand(event) {
         const cmdClean = cmdRaw.toLowerCase().trim();
         input.value = '';
 
-        if (cmdClean === "verify") {
+        // 1. COMANDOS DE EMERGÊNCIA (PRIORIDADE)
+        if (cmdClean === "logs") {
+            logTerminal("REQUISITANDO REGISTROS...");
+            window.open(`https://my.nextdns.io/${NEXT_DNS_ID}/logs`, '_blank');
+        } 
+        else if (cmdClean === "verify") {
             runNetworkVerify();
-        } else if (cmdClean === "clear") {
+        } 
+        else if (cmdClean === "clear") {
             output.innerHTML = "";
             logTerminal("TERMINAL REINICIADO.");
-        } else if (cmdRaw === SECRET_PASS) {
-            logTerminal("ACESSO AUTORIZADO.", "#00ff00");
+        }
+        // 2. VALIDAÇÃO DE SENHA
+        else if (cmdRaw === SECRET_PASS) {
+            logTerminal("CHAVE MESTRA RECONHECIDA.", "#00ff00");
             if (vault) {
                 vault.style.display = 'block';
                 vault.style.visibility = 'visible';
+                vault.style.opacity = '1';
             }
-        } else {
-            logTerminal(`COMANDO '${cmdRaw}' NÃO RECONHECIDO.`, "#ff3b30");
+        } 
+        else {
+            logTerminal(`ERRO: '${cmdRaw}' NÃO RECONHECIDO.`, "#ff3b30");
         }
     }
 }
 
 function runPrivacyScrub() {
-    logTerminal("LIMPANDO RASTROS...");
+    logTerminal("LIMPANDO CACHE...");
     localStorage.clear();
-    sessionStorage.clear();
     logTerminal("SUCESSO.");
 }
 
