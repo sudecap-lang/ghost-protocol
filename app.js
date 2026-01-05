@@ -21,37 +21,51 @@ function logTerminal(msg, color = "#00ffaa") {
 
 window.onload = () => {
     forceLock();
-    logTerminal("GHOST_OS v36.0 ONLINE");
+    logTerminal("GHOST_OS v37.0 ONLINE");
 };
+
+// --- OPERATIONAL FUNCTIONS ---
 
 async function runNetworkVerify() {
     logTerminal("VERIFYING NETWORK TUNNEL...", "#00aaff");
     try {
-        const res = await fetch(`https://test.nextdns.io/?t=${Date.now()}`, { mode: 'no-cors' });
+        await fetch(`https://test.nextdns.io/?t=${Date.now()}`, { mode: 'no-cors' });
         logTerminal("SHIELD: GREEN", "#34c759");
     } catch (e) {
         logTerminal("SHIELD: ERROR", "#ff3b30");
     }
 }
 
+function openLogs() {
+    logTerminal("OPENING ACCESS LOGS...");
+    window.open(`https://my.nextdns.io/${NEXT_DNS_ID}/logs`, '_blank');
+}
+
+function clearTerminal() {
+    output.innerHTML = "";
+    logTerminal("TERMINAL RESET.");
+}
+
+function runPrivacyScrub() {
+    localStorage.clear();
+    sessionStorage.clear();
+    logTerminal("CLEANUP COMPLETE.");
+}
+
+function emergencyWipe() {
+    localStorage.clear();
+    window.location.replace("https://www.reuters.com");
+}
+
+// --- CORE LOGIC ---
+
 function checkCommand(event) {
     if (event.key === 'Enter') {
         const input = document.getElementById('command-input');
         const cmdRaw = input.value;
-        const cmdClean = cmdRaw.toLowerCase().trim();
         input.value = '';
 
-        if (cmdClean === "verify") {
-            runNetworkVerify();
-        } 
-        else if (cmdClean === "logs") {
-            window.open(`https://my.nextdns.io/${NEXT_DNS_ID}/logs`, '_blank');
-        }
-        else if (cmdClean === "clear") {
-            output.innerHTML = "";
-            logTerminal("TERMINAL RESET.");
-        }
-        else if (cmdRaw === SECRET_PASS) {
+        if (cmdRaw === SECRET_PASS) {
             logTerminal("ACCESS GRANTED.", "#00ff00");
             if (vault) {
                 vault.style.display = 'block';
@@ -59,21 +73,10 @@ function checkCommand(event) {
             }
         } 
         else {
-            logTerminal(`INVALID COMMAND: '${cmdRaw}'`, "#ff3b30");
+            logTerminal("INVALID CREDENTIALS.", "#ff3b30");
             forceLock();
         }
     }
-}
-
-function emergencyWipe() {
-    localStorage.clear();
-    sessionStorage.clear();
-    window.location.replace("https://www.reuters.com");
-}
-
-function runPrivacyScrub() {
-    localStorage.clear();
-    logTerminal("CLEANUP COMPLETE.");
 }
 
 function toggleStealth() {
