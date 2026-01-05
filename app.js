@@ -24,29 +24,33 @@ function logTerminal(msg, color = "#00ffaa") {
     output.scrollTop = output.scrollHeight;
 }
 
-// FUNÇÃO RESTAURADA: LIMPAR TERMINAL
+// RESTAURAÇÃO: LIMPAR TERMINAL
 function clearTerminal() {
     output.innerHTML = "";
-    logTerminal("CLEARED", "#aaa");
+    logTerminal("BUFFER_CLEARED", "#aaa");
 }
 
-// FUNÇÃO RESTAURADA: VERIFICAR REDE
+// RESTAURAÇÃO: VERIFICAÇÃO DE REDE (TESTA O TÚNEL DNS)
 async function runNetworkVerify() {
     try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 2000);
-        // Testa a conexão através do seu filtro NextDNS
+        const timeoutId = setTimeout(() => controller.abort(), 2500);
+        // Se este fetch falhar, significa que o filtro está bloqueando ou você está offline
         await fetch(`https://test.nextdns.io/?t=${Date.now()}`, { mode: 'no-cors', signal: controller.signal });
-        logTerminal("NET_ACTIVE", "#34c759");
+        logTerminal("TUNNEL_SECURE", "#34c759");
     } catch (e) {
-        logTerminal("NET_BLOCKED", "#ff3b30");
+        logTerminal("TUNNEL_EXPOSED_OR_OFFLINE", "#ff3b30");
     }
 }
 
+// RUÍDO DE TRÁFEGO AVANÇADO (NSA STYLE)
 function startEntropyNoise() {
     noiseInterval = setInterval(() => {
-        fetch(`https://www.apple.com/library/test/success.html?r=${Math.random()}`, { mode: 'no-cors' }).catch(()=>{});
-    }, 6000); 
+        // Simula requisições para diversos domínios para diluir metadados
+        const targets = ["https://www.apple.com", "https://www.wikipedia.org", "https://www.reuters.com"];
+        const randomTarget = targets[Math.floor(Math.random() * targets.length)];
+        fetch(`${randomTarget}/favicon.ico?r=${Math.random()}`, { mode: 'no-cors' }).catch(()=>{});
+    }, Math.floor(Math.random() * 4000) + 2000); 
 }
 
 function resetIdleTimer() {
@@ -55,11 +59,12 @@ function resetIdleTimer() {
         vault.style.filter = "none";
         vault.style.opacity = "1";
         idleTimer = setTimeout(() => {
-            vault.style.filter = "blur(75px) brightness(0.1)";
+            vault.style.filter = "blur(80px) brightness(0.05)";
         }, 5000); 
     }
 }
 
+// PROTOCOLO DE MOVIMENTO
 window.ondevicemotion = (event) => {
     let m = event.accelerationIncludingGravity;
     if (Math.abs(m.x) > 35 || Math.abs(m.y) > 35) emergencyWipe();
@@ -71,7 +76,7 @@ window.onload = () => {
     document.addEventListener('touchstart', resetIdleTimer, {passive: true});
 };
 
-// --- FUNÇÕES OPERACIONAIS ---
+// --- FUNÇÕES DE INTERFACE ---
 
 function openLogs() {
     window.open(`https://my.nextdns.io/${NEXT_DNS_ID}/registros`, '_blank');
@@ -80,12 +85,12 @@ function openLogs() {
 function runPrivacyScrub() {
     localStorage.clear();
     sessionStorage.clear();
-    logTerminal("WIPED", "#00ff00");
+    logTerminal("CACHE_DESTROYED", "#00ff00");
 }
 
 function toggleStealth() {
     const s = document.body.style;
-    s.filter = s.filter.includes("brightness") ? "none" : "brightness(0.01) contrast(15) blur(5px)";
+    s.filter = s.filter.includes("brightness") ? "none" : "brightness(0.01) contrast(20) blur(6px)";
 }
 
 function emergencyWipe() {
@@ -106,10 +111,10 @@ function checkCommand(event) {
             vault.style.opacity = "1";
             startEntropyNoise();
             resetIdleTimer();
-            logTerminal("AUTH_OK");
+            logTerminal("ACCESS_ALPHA");
         } 
         else if (cmdRaw === HONEYPOT_PASS) {
-            vault.innerHTML = "<div style='padding:20px; color:#444;'>[DECOY_ACTIVE]</div>";
+            vault.innerHTML = "<div style='padding:20px; color:#222;'>[ENCRYPTED_VOLUME_NULL]</div>";
             vault.style.display = 'block';
             vault.style.visibility = 'visible';
             vault.style.opacity = "1";
@@ -118,7 +123,7 @@ function checkCommand(event) {
             emergencyWipe();
         }
         else {
-            logTerminal("ERR", "#ff3b30");
+            logTerminal("AUTH_FAIL", "#ff3b30");
             forceLock();
         }
     }
