@@ -25,11 +25,13 @@ function logTerminal(msg, color = "#00ffaa") {
     output.scrollTop = output.scrollHeight;
 }
 
-// GERA RUÍDO PARA OCULTAR TRÁFEGO REAL
+// GERA RUÍDO CONSTANTE PARA CAMUFLAGEM DE TRÁFEGO
 function startTrafficNoise() {
+    logTerminal("ANONYMITY_NOISE: STARTING_DUMMY_TRAFFIC", "#00aaff");
     noiseInterval = setInterval(() => {
-        fetch(`https://www.google.com/favicon.ico?q=${Math.random()}`, { mode: 'no-cors' });
-    }, 8000); 
+        // Simula requisições para servidores globais neutros
+        fetch(`https://en.wikipedia.org/wiki/Privacy?q=${Math.random()}`, { mode: 'no-cors' });
+    }, 4000); 
 }
 
 function resetIdleTimer() {
@@ -37,33 +39,42 @@ function resetIdleTimer() {
     if (vault && vault.style.display === 'block') {
         vault.style.filter = "none";
         idleTimer = setTimeout(() => {
-            vault.style.filter = "blur(10px)";
-            logTerminal("SHIELD: VISUAL_BLUR_ACTIVE", "#ff9500");
-        }, 15000); // 15 seg para embaçar
+            vault.style.filter = "blur(15px) grayscale(1)";
+            logTerminal("SHIELD: AUTO_BLUR_PROTECTION", "#ff9500");
+        }, 15000); // 15 segundos sem toque = Blur
     }
 }
 
-window.onload = () => {
-    forceLock();
-    logTerminal("GHOST_OS v45.0 - INTERFACE_STABLE");
-    document.addEventListener('touchstart', resetIdleTimer);
-    document.addEventListener('click', resetIdleTimer);
+// BLOQUEIO POR MOVIMENTO BRUSCO (SENSOR)
+window.ondevicemotion = (event) => {
+    const acceleration = event.accelerationIncludingGravity;
+    if (Math.abs(acceleration.x) > 25 || Math.abs(acceleration.y) > 25) {
+        if (vault && vault.style.display === 'block') {
+            emergencyWipe();
+        }
+    }
 };
 
-// --- FUNÇÕES DOS BOTÕES (CORRIGIDAS) ---
+window.onload = () => {
+    forceLock();
+    logTerminal("GHOST_OS v46.0 - TOTAL_ANONYMITY_READY");
+    document.addEventListener('touchstart', resetIdleTimer);
+};
+
+// --- FUNÇÕES DE OPERAÇÃO ---
 
 async function runNetworkVerify() {
-    logTerminal("VERIFYING_CONNECTION...", "#00aaff");
+    logTerminal("TESTING_TUNNEL_INTEGRITY...", "#00aaff");
     try {
         await fetch(`https://test.nextdns.io/?t=${Date.now()}`, { mode: 'no-cors' });
-        logTerminal("STATUS: SECURE_TUNNEL_ACTIVE", "#34c759");
+        logTerminal("ANONYMITY: SECURE_GREEN", "#34c759");
     } catch (e) {
-        logTerminal("STATUS: CONNECTION_FAILED", "#ff3b30");
+        logTerminal("ANONYMITY: COMPROMISED", "#ff3b30");
     }
 }
 
 function openLogs() {
-    logTerminal("ACCESSING_LOG_SERVER...");
+    logTerminal("RELAYING_ENCRYPTED_LOGS...");
     window.open(`https://my.nextdns.io/${NEXT_DNS_ID}/logs`, '_blank');
 }
 
@@ -75,23 +86,24 @@ function clearTerminal() {
 function runPrivacyScrub() {
     localStorage.clear();
     sessionStorage.clear();
-    logTerminal("PRIVACY_SCRUB: MEMORY_PURGED", "#00ff00");
+    logTerminal("MEMORY_PURGED: OK", "#00ff00");
 }
 
 function toggleStealth() {
     if (document.body.style.filter.includes("brightness")) {
         document.body.style.filter = "none";
-        logTerminal("GHOST_MODE: DISABLED");
+        logTerminal("GHOST_MODE: OFF");
     } else {
-        document.body.style.filter = "brightness(0.5) contrast(1.2)";
-        logTerminal("GHOST_MODE: ENABLED", "#34c759");
+        document.body.style.filter = "brightness(0.3) contrast(1.5) grayscale(1)";
+        logTerminal("GHOST_MODE: ON", "#34c759");
     }
 }
 
 function emergencyWipe() {
     localStorage.clear();
-    logTerminal("SUDO_WIPE_EXECUTED", "#ff3b30");
-    setTimeout(() => { window.location.replace("https://www.reuters.com"); }, 300);
+    sessionStorage.clear();
+    logTerminal("EMERGENCY_WIPE_INITIATED", "#ff3b30");
+    window.location.replace("https://www.reuters.com");
 }
 
 // --- LÓGICA DE ACESSO ---
@@ -103,7 +115,7 @@ function checkCommand(event) {
         input.value = '';
 
         if (cmdRaw === SECRET_PASS) {
-            logTerminal("AUTH_SUCCESS: ACCESS_GRANTED", "#00ff00");
+            logTerminal("AUTH: SUCCESS_LEVEL_GOD", "#00ff00");
             if (vault) {
                 vault.style.display = 'block';
                 vault.style.visibility = 'visible';
@@ -112,16 +124,16 @@ function checkCommand(event) {
             }
         } 
         else if (cmdRaw === DURESS_PASS) {
-            logTerminal("AUTH_SUCCESS: GUEST_MODE", "#00ff00");
+            logTerminal("AUTH: SUCCESS_LEVEL_GUEST", "#00ff00");
             runPrivacyScrub();
             if (vault) {
-                vault.innerHTML = "<div style='padding:20px; color:#555;'>No data found.</div>";
+                vault.innerHTML = "<div style='padding:20px; color:#444;'>No files found on this device.</div>";
                 vault.style.display = 'block';
                 vault.style.visibility = 'visible';
             }
         }
         else {
-            logTerminal("AUTH_ERR: ACCESS_DENIED", "#ff3b30");
+            logTerminal("AUTH: FAILED_UNAUTHORIZED", "#ff3b30");
             forceLock();
         }
     }
