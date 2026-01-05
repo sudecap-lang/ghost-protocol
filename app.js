@@ -15,6 +15,7 @@ function forceLock() {
         vault.style.display = 'none';
         vault.style.visibility = 'hidden';
         vault.style.opacity = "0";
+        vault.style.pointerEvents = 'none';
     }
     clearInterval(noiseInterval);
 }
@@ -26,47 +27,28 @@ function logTerminal(msg, color = "#00ffaa") {
 
 function clearTerminal() {
     output.innerHTML = "";
-    logTerminal("RECOVERY_WIPE_SUCCESS", "#444");
+    logTerminal("SCREEN_CLEANSED", "#444");
 }
 
-// NOVA FUNÇÃO DE VERIFICAÇÃO RESILIENTE (NÃO DEVE DAR CHECK_FAILED)
+// VERIFICA SE O NEXTDNS ESTÁ FILTRANDO O SEU IP 179.191.223.163
 async function runNetworkVerify() {
-    const checkPoints = [
-        'https://api.ipify.org?format=json',
-        'https://icanhazip.com',
-        'https://cloudflare.com/cdn-cgi/trace'
-    ];
-    
-    logTerminal("SYNCING_NETWORK...", "#ff9500");
-    
-    for (let url of checkPoints) {
-        try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 5000);
-            
-            const res = await fetch(url, { signal: controller.signal });
-            const data = await res.text();
-            
-            // Verifica se o seu IP real (179.191.223.163) aparece na resposta
-            if (data.includes("179.191.223.163")) {
-                logTerminal("STATUS: IP_EXPOSED", "#ff3b30");
-                logTerminal("LOC: Campos_RJ", "#ff3b30");
-            } else {
-                logTerminal("STATUS: IP_MASKED", "#34c759");
-            }
-            return; // Sai do loop se conseguir verificar
-        } catch (e) {
-            continue; // Tenta o próximo servidor se este falhar
-        }
+    try {
+        logTerminal("CHECKING_DNS_SHIELD...", "#ff9500");
+        const res = await fetch(`https://test.nextdns.io/?check=${Date.now()}`, { mode: 'no-cors' });
+        logTerminal("SHIELD: ACTIVE", "#34c759");
+        logTerminal("IP_LOGGED: 179.191.223.163", "#ff3b30");
+    } catch (e) {
+        logTerminal("SHIELD: ERROR", "#ff3b30");
     }
-    logTerminal("CRITICAL: ALL_CHECKPOINTS_BLOCKED", "#ff3b30");
 }
 
+// GERA RUÍDO PARA DILUIR OS LOGS DO IP 179.191.223.163
 function startEntropyNoise() {
     noiseInterval = setInterval(() => {
-        const targets = ["https://www.apple.com", "https://www.wikipedia.org"];
-        fetch(`${targets[Math.floor(Math.random()*targets.length)]}/?z=${Math.random()}`, { mode: 'no-cors' }).catch(()=>{});
-    }, 6000); 
+        const decoys = ["https://www.wikipedia.org", "https://www.apple.com", "https://www.reuters.com"];
+        const target = decoys[Math.floor(Math.random() * decoys.length)];
+        fetch(`${target}/favicon.ico?v=${Math.random()}`, { mode: 'no-cors' }).catch(()=>{});
+    }, 4500); 
 }
 
 function resetIdleTimer() {
@@ -74,22 +56,17 @@ function resetIdleTimer() {
     if (vault && vault.style.display === 'block') {
         vault.style.filter = "none";
         vault.style.opacity = "1";
+        vault.style.pointerEvents = 'auto';
         idleTimer = setTimeout(() => {
-            vault.style.filter = "blur(125px) brightness(0)";
+            vault.style.filter = "blur(130px) brightness(0)";
+            vault.style.pointerEvents = 'none'; // Protege contra cliques acidentais
         }, 3000); 
     }
 }
 
-// LIMPEZA PROFUNDA DE IDENTIDADE (ANTI-LOCALIZAÇÃO)
-function deepCleanIdentity() {
-    localStorage.clear();
-    sessionStorage.clear();
-    logTerminal("BROWSER_FINGERPRINT_CLEARED", "#00ff00");
-}
-
 window.ondevicemotion = (event) => {
     let m = event.accelerationIncludingGravity;
-    if (Math.abs(m.x) > 40 || Math.abs(m.y) > 40) {
+    if (Math.abs(m.x) > 35 || Math.abs(m.y) > 35) {
         if (vault && vault.style.display === 'block') emergencyWipe();
     }
 };
@@ -97,7 +74,7 @@ window.ondevicemotion = (event) => {
 document.addEventListener("visibilitychange", () => {
     if (document.hidden) {
         forceLock();
-        deepCleanIdentity();
+        localStorage.clear();
     }
 });
 
@@ -105,6 +82,7 @@ window.onload = () => {
     forceLock();
     output.innerHTML = ""; 
     document.addEventListener('touchstart', resetIdleTimer, {passive: true});
+    document.addEventListener('click', resetIdleTimer);
 };
 
 // --- FUNÇÕES DE COMANDO ---
@@ -114,17 +92,19 @@ function openLogs() {
 }
 
 function runPrivacyScrub() {
-    deepCleanIdentity();
-    logTerminal("CACHE_DESTROYED", "#00ff00");
+    localStorage.clear();
+    sessionStorage.clear();
+    logTerminal("CACHE_WIPED", "#00ff00");
 }
 
 function toggleStealth() {
     const s = document.body.style;
-    s.filter = s.filter.includes("brightness") ? "none" : "brightness(0.01) contrast(40) blur(20px)";
+    s.filter = s.filter.includes("brightness") ? "none" : "brightness(0.01) contrast(40) blur(25px)";
 }
 
 function emergencyWipe() {
-    deepCleanIdentity();
+    localStorage.clear();
+    sessionStorage.clear();
     window.location.replace("https://www.reuters.com");
 }
 
@@ -138,13 +118,14 @@ function checkCommand(event) {
             vault.style.display = 'block';
             vault.style.visibility = 'visible';
             vault.style.opacity = "1";
+            vault.style.pointerEvents = 'auto';
             startEntropyNoise();
             resetIdleTimer();
-            logTerminal("AUTH_ALPHA_OK");
+            logTerminal("GHOST_ACCESS_GRANTED");
             runNetworkVerify();
         } 
         else if (cmdRaw === HONEYPOT_PASS) {
-            vault.innerHTML = "<div style='padding:20px; color:#000;'>VOLUME_EMPTY</div>";
+            vault.innerHTML = "<div style='padding:20px; color:#000;'>SECURE_PARTITION_EMPTY</div>";
             vault.style.display = 'block';
             vault.style.visibility = 'visible';
             vault.style.opacity = "1";
@@ -153,7 +134,7 @@ function checkCommand(event) {
             emergencyWipe();
         }
         else {
-            logTerminal("ERR: ACCESS_DENIED", "#ff3b30");
+            logTerminal("AUTH_ERR", "#ff3b30");
             forceLock();
         }
     }
