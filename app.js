@@ -23,13 +23,13 @@ function logTerminal(msg, color = "#00ffaa") {
     output.scrollTop = output.scrollHeight;
 }
 
-// GERA RUÍDO PARA CAMUFLAR O USO DE APPS COMO INTELBRAS E WHATSAPP
+// CAMUFLAGEM PARA OCULTAR O USO DE COMUNICAÇÕES SEGURAS (PROTON)
 function startTrafficNoise() {
-    logTerminal("DECEPTION_MODULE: MULTI_APP_NOISE_ON", "#00aaff");
+    logTerminal("SECURE_COMM_CAMOUFLAGE: ON", "#00aaff");
     noiseInterval = setInterval(() => {
-        // Simula tráfego genérico para esconder os picos de outros apps
-        fetch(`https://www.apple.com/library/test/success.html?t=${Math.random()}`, { mode: 'no-cors' });
-    }, 4000); 
+        // Tráfego "ruído" para diluir os registros de API do Proton e Intelbras
+        fetch(`https://www.reuters.com/favicon.ico?v=${Math.random()}`, { mode: 'no-cors' });
+    }, 4500); 
 }
 
 function resetIdleTimer() {
@@ -37,59 +37,59 @@ function resetIdleTimer() {
     if (vault && vault.style.display === 'block') {
         vault.style.filter = "none";
         idleTimer = setTimeout(() => {
-            vault.style.filter = "blur(35px) brightness(0.2) grayscale(1)";
-            logTerminal("SHIELD: MAX_PRIVACY_BLUR", "#ff9500");
-        }, 10000); // 10 segundos para proteção máxima
+            vault.style.filter = "blur(30px) brightness(0.25)";
+            logTerminal("SHIELD: IDLE_PROTECTION_ENGAGED", "#ff9500");
+        }, 12000); 
     }
 }
 
-// WIPE POR MOVIMENTO (PROTEÇÃO CONTRA TOMADA DO IPHONE)
+// PROTEÇÃO CONTRA ROUBO (WIPE POR MOVIMENTO)
 window.ondevicemotion = (event) => {
     let acc = event.accelerationIncludingGravity;
-    if (Math.abs(acc.x) > 25 || Math.abs(acc.y) > 25) {
+    if (Math.abs(acc.x) > 26 || Math.abs(acc.y) > 26) {
         if (vault && vault.style.display === 'block') emergencyWipe();
     }
 };
 
 window.onload = () => {
     forceLock();
-    logTerminal("GHOST_OS v54.0 - SYSTEM_WIDE_MONITORING_ACTIVE");
+    logTerminal("GHOST_OS v55.0 - PROTON_COMM_PROTECTED");
     document.addEventListener('touchstart', resetIdleTimer);
 };
 
-// --- FUNÇÕES OPERACIONAIS ---
+// --- OPERATIONAL TOOLS ---
 
 async function runNetworkVerify() {
-    logTerminal("SCANNING_NETWORK_INTEGRITY...", "#00aaff");
+    logTerminal("CHECKING_SECURITY_LOGS...", "#00aaff");
     try {
         await fetch(`https://test.nextdns.io/?t=${Date.now()}`, { mode: 'no-cors' });
-        logTerminal("STATUS: ENCRYPTED_DNS_ACTIVE", "#34c759");
-        logTerminal("ALERT: PUBLIC_IP_EXPOSED", "#ff3b30");
+        logTerminal("ANONYMITY: MULTI_APP_FILTERING_ACTIVE", "#34c759");
+        logTerminal("TRACE_INFO: SENTRY_TELEMETRY_BLOCKED", "#34c759");
     } catch (e) {
-        logTerminal("STATUS: FULL_STEALTH_MODE", "#34c759");
+        logTerminal("CRITICAL: FILTER_FAILURE", "#ff3b30");
     }
 }
 
 function openLogs() {
-    logTerminal("OPENING_REMOTE_LOG_STREAM...");
+    logTerminal("CONNECTING_TO_NEXTDNS_REGISTROS...");
     window.open(`https://my.nextdns.io/${NEXT_DNS_ID}/registros`, '_blank');
 }
 
 function runPrivacyScrub() {
     localStorage.clear();
     sessionStorage.clear();
-    logTerminal("CACHE_PURGED: OK", "#00ff00");
+    logTerminal("VOLATILE_MEMORY_PURGED", "#00ff00");
 }
 
 function toggleStealth() {
     document.body.style.filter = document.body.style.filter.includes("brightness") ? 
-        "none" : "brightness(0.1) contrast(3) grayscale(1) blur(0.5px)";
-    logTerminal("STEALTH_LAYER_ACTIVE");
+        "none" : "brightness(0.15) contrast(2) grayscale(1)";
+    logTerminal("STEALTH_MODE: STATUS_CHANGED");
 }
 
 function emergencyWipe() {
     localStorage.clear();
-    logTerminal("SUDO_WIPE_INITIATED", "#ff3b30");
+    logTerminal("EXEC_WIPE: RED_PROTOCOL", "#ff3b30");
     window.location.replace("https://www.reuters.com");
 }
 
@@ -100,7 +100,7 @@ function checkCommand(event) {
         input.value = '';
 
         if (cmdRaw === SECRET_PASS) {
-            logTerminal("AUTH: ACCESS_GRANTED", "#00ff00");
+            logTerminal("ACCESS_GRANTED: COMMANDER", "#00ff00");
             if (vault) {
                 vault.style.display = 'block';
                 vault.style.visibility = 'visible';
@@ -109,16 +109,16 @@ function checkCommand(event) {
             }
         } 
         else if (cmdRaw === DURESS_PASS) {
-            logTerminal("AUTH: DECOY_SESSION_START", "#00ff00");
+            logTerminal("ACCESS_GRANTED: GUEST_DECOY", "#00ff00");
             runPrivacyScrub();
             if (vault) {
-                vault.innerHTML = "<div style='padding:20px; color:#222;'>No logs recorded. System at 100% health.</div>";
+                vault.innerHTML = "<div style='padding:20px; color:#333;'>Logs clean. Partition encrypted.</div>";
                 vault.style.display = 'block';
                 vault.style.visibility = 'visible';
             }
         }
         else {
-            logTerminal("AUTH: UNAUTHORIZED_LOCKED", "#ff3b30");
+            logTerminal("ACCESS_DENIED: RE-LOCKING", "#ff3b30");
             forceLock();
         }
     }
