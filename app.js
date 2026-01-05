@@ -6,6 +6,7 @@ const NEXT_DNS_ID = "6ddbfb";
 const output = document.getElementById('terminal-output');
 const vault = document.getElementById('secret-vault');
 
+// LIMPEZA INICIAL DE FILTROS E ESTADOS
 if (vault) vault.style.display = 'none';
 document.body.style.filter = "none";
 
@@ -15,30 +16,28 @@ function logTerminal(msg, color = "#00ffaa") {
     output.scrollTop = output.scrollHeight;
 }
 
-// Função de Diagnóstico compatível com o log da sua imagem
+// Função de Diagnóstico com Bypass de Bloqueio do Safari
 async function runNetworkVerify() {
-    logTerminal("ANALISANDO PROTOCOLO DE REDE...", "#00aaff");
+    logTerminal("SOLICITANDO PING DE SEGURANÇA (BYPASS MODE)...", "#00aaff");
     try {
-        const res = await fetch(`https://test.nextdns.io/?t=${Date.now()}`);
-        const text = await res.text(); // Lê como texto para evitar erro de JSON
+        // Usamos um modo que o navegador não bloqueia a interceptação
+        const res = await fetch(`https://test.nextdns.io/?t=${Date.now()}`, {
+            mode: 'no-cors' 
+        });
         
-        // Verifica se o seu ID de configuração aparece no tráfego
-        if (text.includes(NEXT_DNS_ID)) {
-            logTerminal("SHIELD: VERDE (TÚNEL PRIVADO ATIVO)", "#34c759");
-        } else if (text.includes("status\": \"ok\"") || text.includes("destIP")) {
-            logTerminal("SHIELD: LARANJA (USANDO DNS GENÉRICO)", "#ff9500");
-            logTerminal("SISTEMA DETECTOU PROTOCOLO UDP EM 45.90.28.0", "#ff9500");
-        } else {
-            logTerminal("SHIELD: VERMELHO (REDE EXPOSTA)", "#ff3b30");
+        // Como o 'no-cors' não permite ler o texto, verificamos a conectividade
+        if (res.type === 'opaque' || res.ok || res.status === 0) {
+            logTerminal("CONEXÃO ESTABELECIDA COM O SERVIDOR.", "#00ffaa");
+            logTerminal("DICA: SE O SITE NEXTDNS ESTÁ LARANJA, O DNS MANUAL NO WI-FI É OBRIGATÓRIO.", "#ff9500");
         }
     } catch (e) {
-        logTerminal("ERRO: FALHA NA INTERCEPTAÇÃO DE DADOS", "#ff3b30");
+        logTerminal("ERRO: REDE LOCAL BLOQUEOU A REQUISIÇÃO.", "#ff3b30");
     }
 }
 
 window.onload = () => {
-    logTerminal("GHOST_OS v22.0 ONLINE");
-    logTerminal("AGUARDANDO COMANDO...");
+    logTerminal("GHOST_OS v23.0 ONLINE");
+    logTerminal("DIGITE A SENHA OU 'VERIFY' PARA TESTAR REDE.");
 };
 
 function checkCommand(event) {
@@ -48,6 +47,7 @@ function checkCommand(event) {
         const cmdClean = cmdRaw.toLowerCase().trim();
         input.value = '';
 
+        // 1. COMANDOS DO SISTEMA
         if (cmdClean === "verify") {
             runNetworkVerify();
         } 
@@ -55,31 +55,42 @@ function checkCommand(event) {
             output.innerHTML = "";
             logTerminal("TERMINAL REINICIADO.");
         }
+        else if (cmdClean === "logs") {
+            window.open(`https://my.nextdns.io/${NEXT_DNS_ID}/logs`, '_blank');
+        }
+        // 2. VALIDAÇÃO DA SENHA MESTRE
         else if (cmdRaw === SECRET_PASS) {
-            logTerminal("ACESSO AO COFRE LIBERADO.", "#00ff00");
+            logTerminal("CHAVE ACEITA. DESBLOQUEANDO CONTEÚDO...", "#00ff00");
             if (vault) {
                 vault.style.display = 'block';
                 vault.style.visibility = 'visible';
+                vault.style.opacity = '1';
             }
         } 
         else {
-            logTerminal(`SISTEMA: '${cmdRaw}' NÃO RECONHECIDO`, "#ff3b30");
+            logTerminal(`SISTEMA: ENTRADA '${cmdRaw}' INVÁLIDA`, "#ff3b30");
         }
     }
 }
 
 function runPrivacyScrub() {
-    logTerminal("LIMPANDO CACHE DE NAVEGAÇÃO...");
+    logTerminal("LIMPANDO DADOS DE SESSÃO...");
     localStorage.clear();
-    logTerminal("LIMPEZA_CONCLUÍDA.");
+    sessionStorage.clear();
+    logTerminal("MEMÓRIA HIGIENIZADA.");
 }
 
 function toggleStealth() {
     if (document.body.style.filter.includes("brightness")) {
         document.body.style.filter = "none";
-        logTerminal("STEALTH: OFF");
+        logTerminal("MODO GHOST: OFF");
     } else {
-        document.body.style.filter = "brightness(0.6) contrast(1.2)";
-        logTerminal("STEALTH: ON");
+        document.body.style.filter = "brightness(0.7) contrast(1.2)";
+        logTerminal("MODO GHOST: ON");
     }
+}
+
+function emergencyWipe() {
+    localStorage.clear();
+    window.location.replace("https://www.reuters.com");
 }
