@@ -10,7 +10,6 @@ let noiseInterval;
 const output = document.getElementById('terminal-output');
 const vault = document.getElementById('secret-vault');
 
-// GARANTE QUE OS BOTÕES E INPUT ESTEJAM SEMPRE ACESSÍVEIS
 function emergencyUIReset() {
     if (vault) {
         vault.style.pointerEvents = "auto";
@@ -25,26 +24,10 @@ function logTerminal(msg, color = "#00ffaa") {
     output.scrollTop = output.scrollHeight;
 }
 
-// FUNÇÃO CLEAR TERMINAL (REPARADA)
 function clearTerminal() {
     output.innerHTML = "";
-    logTerminal("TERMINAL_BUFFER_REBUILT", "#444");
+    logTerminal("SCREEN_PURGED", "#555");
     emergencyUIReset();
-}
-
-// GHOST MODE: RUÍDO DE REDE PARA DILUIR IP 179.191.223.163
-function toggleGhostMode() {
-    if (noiseInterval) {
-        clearInterval(noiseInterval);
-        noiseInterval = null;
-        logTerminal("GHOST_MODE: DISABLED", "#ff3b30");
-    } else {
-        logTerminal("GHOST_MODE: INITIALIZING...", "#00ffaa");
-        noiseInterval = setInterval(() => {
-            fetch(`https://www.apple.com/library/test/success.html?t=${Math.random()}`, { mode: 'no-cors' }).catch(()=>{});
-        }, 4000);
-        logTerminal("GHOST_MODE: ACTIVE (DILUTING_TRAFFIC)", "#34c759");
-    }
 }
 
 async function runNetworkVerify() {
@@ -52,9 +35,10 @@ async function runNetworkVerify() {
         const res = await fetch('https://api.ipify.org?format=json');
         const data = await res.json();
         const color = data.ip === "179.191.223.163" ? "#ff3b30" : "#34c759";
-        logTerminal(`CURRENT_NET_IP: ${data.ip}`, color);
+        logTerminal(`TRACED_IP: ${data.ip}`, color);
+        if(color === "#ff3b30") logTerminal("LOC: CAMPOS_RJ_VISIBLE", "#ff3b30");
     } catch (e) {
-        logTerminal("NETWORK_ENCRYPTION_ACTIVE", "#34c759");
+        logTerminal("DNS_ENCRYPTION_ACTIVE", "#34c759");
     }
 }
 
@@ -68,12 +52,40 @@ function resetIdleTimer() {
     }
 }
 
-// GESTÃO DE PERSISTÊNCIA
+// PRIVACY SCRUB REPARADO (NÃO DESLOGA MAIS)
+function runPrivacyScrub() {
+    // Limpa tudo EXCETO a chave de autenticação
+    const auth = sessionStorage.getItem('is_auth');
+    localStorage.clear();
+    sessionStorage.clear();
+    
+    // Restaura a sessão imediatamente
+    if (auth) sessionStorage.setItem('is_auth', auth);
+    
+    logTerminal("PRIVACY_SCRUB: COMPLETED", "#34c759");
+    logTerminal("CACHE_WIPED_SESS_KEPT", "#00ffaa");
+    
+    emergencyUIReset();
+    resetIdleTimer();
+}
+
+function toggleGhostMode() {
+    if (noiseInterval) {
+        clearInterval(noiseInterval);
+        noiseInterval = null;
+        logTerminal("GHOST_MODE: OFF", "#ff3b30");
+    } else {
+        noiseInterval = setInterval(() => {
+            fetch(`https://www.google.com/favicon.ico?v=${Math.random()}`, { mode: 'no-cors' }).catch(()=>{});
+        }, 4000);
+        logTerminal("GHOST_MODE: ON (DILUTING_IP)", "#34c759");
+    }
+}
+
 document.addEventListener("visibilitychange", () => {
     if (!document.hidden) {
         emergencyUIReset();
         if (sessionStorage.getItem('is_auth') === 'true') {
-            logTerminal("RE-SYNCING_SESSION...", "#555");
             runNetworkVerify();
         }
     }
@@ -88,17 +100,10 @@ window.onload = () => {
     document.addEventListener('click', () => { emergencyUIReset(); resetIdleTimer(); });
 };
 
-// --- COMANDOS ATIVOS ---
+// --- OPERAÇÕES ---
 
 function openLogs() {
     window.open(`https://my.nextdns.io/${NEXT_DNS_ID}/registros`, '_blank');
-}
-
-function runPrivacyScrub() {
-    localStorage.clear();
-    sessionStorage.clear();
-    logTerminal("CORE_WIPE_EXECUTED", "#ff3b30");
-    setTimeout(() => location.reload(), 800);
 }
 
 function checkCommand(event) {
@@ -113,7 +118,7 @@ function checkCommand(event) {
             sessionStorage.setItem('is_auth', 'true');
             vault.style.display = 'block';
             vault.style.visibility = 'visible';
-            logTerminal("V86_CORE_READY");
+            logTerminal("V87_GHOST_READY");
             runNetworkVerify();
             resetIdleTimer();
         } 
@@ -121,11 +126,12 @@ function checkCommand(event) {
             clearTerminal();
         }
         else if (cmdRaw === DURESS_PASS) {
-            runPrivacyScrub();
+            sessionStorage.clear();
+            localStorage.clear();
             window.location.replace("https://www.reuters.com");
         }
         else {
-            logTerminal("AUTH_ERROR", "#ff3b30");
+            logTerminal("AUTH_ERR", "#ff3b30");
         }
     }
 }
