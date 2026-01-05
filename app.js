@@ -6,7 +6,7 @@ const NEXT_DNS_ID = "6ddbfb";
 const output = document.getElementById('terminal-output');
 const vault = document.getElementById('secret-vault');
 
-// LIMPEZA INICIAL DE FILTROS E ESTADOS
+// PROTEÇÃO DE INICIALIZAÇÃO
 if (vault) vault.style.display = 'none';
 document.body.style.filter = "none";
 
@@ -16,28 +16,28 @@ function logTerminal(msg, color = "#00ffaa") {
     output.scrollTop = output.scrollHeight;
 }
 
-// Função de Diagnóstico com Bypass de Bloqueio do Safari
 async function runNetworkVerify() {
-    logTerminal("SOLICITANDO PING DE SEGURANÇA (BYPASS MODE)...", "#00aaff");
+    logTerminal("VERIFICANDO INTEGRIDADE DO TÚNEL...", "#00aaff");
     try {
-        // Usamos um modo que o navegador não bloqueia a interceptação
-        const res = await fetch(`https://test.nextdns.io/?t=${Date.now()}`, {
-            mode: 'no-cors' 
-        });
+        const res = await fetch(`https://test.nextdns.io/?t=${Date.now()}`);
+        const text = await res.text();
         
-        // Como o 'no-cors' não permite ler o texto, verificamos a conectividade
-        if (res.type === 'opaque' || res.ok || res.status === 0) {
-            logTerminal("CONEXÃO ESTABELECIDA COM O SERVIDOR.", "#00ffaa");
-            logTerminal("DICA: SE O SITE NEXTDNS ESTÁ LARANJA, O DNS MANUAL NO WI-FI É OBRIGATÓRIO.", "#ff9500");
+        if (text.includes(NEXT_DNS_ID)) {
+            logTerminal("SINAL: VERDE (PERFIL 6DDBFB ATIVO)", "#34c759");
+        } else if (text.includes("GIGA MAIS")) {
+            logTerminal("SINAL: VERMELHO (OPERADORA DETECTADA)", "#ff3b30");
+            logTerminal("AÇÃO: REINSTALE O PERFIL DE CONFIGURAÇÃO.", "#ff9500");
+        } else {
+            logTerminal("SINAL: LARANJA (DNS GENÉRICO ATIVO)", "#ff9500");
         }
     } catch (e) {
-        logTerminal("ERRO: REDE LOCAL BLOQUEOU A REQUISIÇÃO.", "#ff3b30");
+        logTerminal("ERRO: FALHA NA COMUNICAÇÃO COM O ESCUDO.", "#ff3b30");
     }
 }
 
 window.onload = () => {
-    logTerminal("GHOST_OS v23.0 ONLINE");
-    logTerminal("DIGITE A SENHA OU 'VERIFY' PARA TESTAR REDE.");
+    logTerminal("GHOST_OS v24.0 ONLINE");
+    runNetworkVerify();
 };
 
 function checkCommand(event) {
@@ -47,50 +47,36 @@ function checkCommand(event) {
         const cmdClean = cmdRaw.toLowerCase().trim();
         input.value = '';
 
-        // 1. COMANDOS DO SISTEMA
         if (cmdClean === "verify") {
             runNetworkVerify();
-        } 
-        else if (cmdClean === "clear") {
+        } else if (cmdClean === "clear") {
             output.innerHTML = "";
             logTerminal("TERMINAL REINICIADO.");
-        }
-        else if (cmdClean === "logs") {
-            window.open(`https://my.nextdns.io/${NEXT_DNS_ID}/logs`, '_blank');
-        }
-        // 2. VALIDAÇÃO DA SENHA MESTRE
-        else if (cmdRaw === SECRET_PASS) {
-            logTerminal("CHAVE ACEITA. DESBLOQUEANDO CONTEÚDO...", "#00ff00");
+        } else if (cmdRaw === SECRET_PASS) {
+            logTerminal("ACESSO AUTORIZADO.", "#00ff00");
             if (vault) {
                 vault.style.display = 'block';
                 vault.style.visibility = 'visible';
-                vault.style.opacity = '1';
             }
-        } 
-        else {
-            logTerminal(`SISTEMA: ENTRADA '${cmdRaw}' INVÁLIDA`, "#ff3b30");
+        } else {
+            logTerminal(`COMANDO '${cmdRaw}' NÃO RECONHECIDO.`, "#ff3b30");
         }
     }
 }
 
 function runPrivacyScrub() {
-    logTerminal("LIMPANDO DADOS DE SESSÃO...");
+    logTerminal("LIMPANDO RASTROS...");
     localStorage.clear();
     sessionStorage.clear();
-    logTerminal("MEMÓRIA HIGIENIZADA.");
+    logTerminal("SUCESSO.");
 }
 
 function toggleStealth() {
     if (document.body.style.filter.includes("brightness")) {
         document.body.style.filter = "none";
-        logTerminal("MODO GHOST: OFF");
+        logTerminal("STEALTH: OFF");
     } else {
-        document.body.style.filter = "brightness(0.7) contrast(1.2)";
-        logTerminal("MODO GHOST: ON");
+        document.body.style.filter = "brightness(0.7) contrast(1.1)";
+        logTerminal("STEALTH: ON");
     }
-}
-
-function emergencyWipe() {
-    localStorage.clear();
-    window.location.replace("https://www.reuters.com");
 }
