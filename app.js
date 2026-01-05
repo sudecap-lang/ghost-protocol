@@ -6,7 +6,7 @@ const NEXT_DNS_ID = "6ddbfb";
 const output = document.getElementById('terminal-output');
 const vault = document.getElementById('secret-vault');
 
-// ESTADO INICIAL: COFRE OCULTO E TELA CLARA
+// ESTADO INICIAL
 if (vault) {
     vault.style.display = 'none';
     vault.style.visibility = 'hidden';
@@ -19,75 +19,76 @@ function logTerminal(msg, color = "#00ffaa") {
     output.scrollTop = output.scrollHeight;
 }
 
-// Função de Diagnóstico de Rede
+// Função de Diagnóstico
 async function runNetworkVerify() {
-    logTerminal("INICIANDO SCAN DE REDE...", "#00aaff");
+    logTerminal("ESCANEANDO TÚNEL DE REDE...", "#00aaff");
     try {
         const res = await fetch(`https://test.nextdns.io/?t=${Date.now()}`);
         const data = await res.json();
         if (data.status === "ok" && data.configuration === NEXT_DNS_ID) {
-            logTerminal("SHIELD: VERDE (PERFIL 6DDBFB ATIVO)", "#34c759");
+            logTerminal("RESULTADO: ESCUDO VERDE (6DDBFB OPERALIZADO)", "#34c759");
         } else {
-            logTerminal("SHIELD: LARANJA/VERMELHO (REDE EXPOSTA)", "#ff9500");
+            logTerminal("RESULTADO: ESCUDO LARANJA (IP OK, PERFIL AUSENTE)", "#ff9500");
         }
     } catch (e) {
-        logTerminal("ERRO: FALHA NA CONEXÃO COM O SERVIDOR", "#ff3b30");
+        logTerminal("ERRO: SERVIDOR NÃO RESPONDE", "#ff3b30");
     }
 }
 
 window.onload = () => {
-    logTerminal("GHOST_OS v18.0 ONLINE");
-    logTerminal("DIGITE 'VERIFY' PARA SCAN OU A SENHA PARA O COFRE.");
+    logTerminal("GHOST_OS v19.0 ONLINE");
+    logTerminal("PRONTO PARA COMANDOS OU CHAVE MESTRA.");
 };
 
 function checkCommand(event) {
     if (event.key === 'Enter') {
         const input = document.getElementById('command-input');
-        const cmd = input.value; // Mantém original para a senha
-        const cmdLower = cmd.toLowerCase().trim(); // Versão para comandos
+        const cmdRaw = input.value; // Para a senha (exata)
+        const cmdClean = cmdRaw.toLowerCase().trim(); // Para comandos
         input.value = '';
 
-        // 1. VERIFICAÇÃO DE COMANDOS
-        if (cmdLower === "verify") {
+        // --- 1. PRIORIDADE: COMANDOS DE SISTEMA ---
+        if (cmdClean === "verify") {
             runNetworkVerify();
         } 
-        else if (cmdLower === "logs") {
+        else if (cmdClean === "logs") {
+            logTerminal("REQUISITANDO ACESSO AOS REGISTROS...");
             window.open(`https://my.nextdns.io/${NEXT_DNS_ID}/logs`, '_blank');
         } 
-        else if (cmdLower === "clear") {
+        else if (cmdClean === "clear") {
             output.innerHTML = "";
             logTerminal("TERMINAL REINICIADO.");
         }
-        // 2. VERIFICAÇÃO DE SENHA (IDÊNTICA À SUA)
-        else if (cmd === SECRET_PASS) {
-            logTerminal("ACESSO AUTORIZADO. ABRINDO COFRE...", "#00ff00");
+        // --- 2. SEGUNDA OPÇÃO: VALIDAÇÃO DE SENHA ---
+        else if (cmdRaw === SECRET_PASS) {
+            logTerminal("CHAVE MESTRA ACEITA. COFRE ABERTO.", "#00ff00");
             if (vault) {
                 vault.style.display = 'block';
                 vault.style.visibility = 'visible';
                 vault.style.opacity = '1';
             }
         } 
-        // 3. ERRO
+        // --- 3. SE NÃO FOR COMANDO NEM SENHA CORRETA ---
         else {
-            logTerminal(`COMANDO OU CHAVE '${cmd}' INVÁLIDA`, "#ff3b30");
+            logTerminal(`SISTEMA: '${cmdRaw}' NÃO RECONHECIDO`, "#ff3b30");
         }
     }
 }
 
 function runPrivacyScrub() {
-    logTerminal("DESTRUINDO CACHE...");
+    logTerminal("EXECUTANDO LIMPAGEM DE EMERGÊNCIA...");
     localStorage.clear();
     sessionStorage.clear();
-    logTerminal("LIMPEZA CONCLUÍDA.");
+    logTerminal("CACHES DESTRUÍDOS.");
 }
 
 function toggleStealth() {
     if (document.body.style.filter.includes("brightness")) {
         document.body.style.filter = "none";
-        logTerminal("MODO STEALTH: OFF");
+        logTerminal("STEALTH_MODE: OFF");
     } else {
-        document.body.style.filter = "brightness(0.5) contrast(1.5) grayscale(0.8)";
-        logTerminal("MODO STEALTH: ON");
+        document.body.style.filter = "brightness(0.6) contrast(1.2) grayscale(0.5)";
+        logTerminal("STEALTH_MODE: ON");
     }
 }
 
