@@ -26,28 +26,35 @@ function logTerminal(msg, color = "#00ffaa") {
 
 function clearTerminal() {
     output.innerHTML = "";
-    logTerminal("VOLATILE_BUFFER_CLEARED", "#666");
+    logTerminal("LOCAL_BUFFER_RESET", "#555");
 }
 
+// VERIFICA EXPOSIÇÃO DO IP 179.191.223.163
 async function runNetworkVerify() {
     try {
-        const controller = new AbortController();
-        setTimeout(() => controller.abort(), 2000);
-        // Verifica se o túnel NextDNS está filtrando corretamente
-        await fetch(`https://test.nextdns.io/?check=${Date.now()}`, { mode: 'no-cors', signal: controller.signal });
-        logTerminal("STATUS: FILTER_ACTIVE", "#34c759");
+        const response = await fetch('https://api.ipify.org?format=json');
+        const data = await response.json();
+        const currentIP = data.ip;
+        
+        if (currentIP === "179.191.223.163") {
+            logTerminal("EXPOSED_IP: " + currentIP, "#ff3b30");
+            logTerminal("SUGESTÃO: USE CLOUDFLARE_WARP", "#ff9500");
+        } else {
+            logTerminal("IP_HIDDEN: SUCCESS", "#34c759");
+            logTerminal("NODE: " + currentIP, "#34c759");
+        }
     } catch (e) {
-        logTerminal("STATUS: EXPOSED", "#ff3b30");
+        logTerminal("OFFLINE_OR_BLOCKED", "#ff3b30");
     }
 }
 
-// GERAÇÃO DE RUÍDO PARA DILUIR O IP 179.191.223.163
 function startEntropyNoise() {
     noiseInterval = setInterval(() => {
-        const decoy = ["https://www.wikipedia.org", "https://www.reuters.com", "https://www.apple.com"];
-        const target = decoy[Math.floor(Math.random() * decoy.length)];
-        fetch(`${target}/favicon.ico?v=${Math.random()}`, { mode: 'no-cors' }).catch(()=>{});
-    }, 4500); 
+        // Simula tráfego para diluir o perfil de navegação
+        const sites = ["https://www.wikipedia.org", "https://www.reuters.com"];
+        const s = sites[Math.floor(Math.random() * sites.length)];
+        fetch(`${s}/favicon.ico?v=${Math.random()}`, { mode: 'no-cors' }).catch(()=>{});
+    }, 6000); 
 }
 
 function resetIdleTimer() {
@@ -56,24 +63,24 @@ function resetIdleTimer() {
         vault.style.filter = "none";
         vault.style.opacity = "1";
         idleTimer = setTimeout(() => {
-            vault.style.filter = "blur(95px) brightness(0)";
-        }, 4000); // 4 segundos para bloqueio visual
+            vault.style.filter = "blur(110px) brightness(0)";
+        }, 3000); 
     }
 }
 
-// WIPE POR MOVIMENTO (FBI PROTOCOL)
+// SENSOR DE MOVIMENTO (GRATUITO E LOCAL)
 window.ondevicemotion = (event) => {
     let m = event.accelerationIncludingGravity;
-    if (Math.abs(m.x) > 35 || Math.abs(m.y) > 35) {
+    if (Math.abs(m.x) > 38 || Math.abs(m.y) > 38) {
         if (vault && vault.style.display === 'block') emergencyWipe();
     }
 };
 
-// AUTO-LOCK AO SAIR DO SAFARI
 document.addEventListener("visibilitychange", () => {
     if (document.hidden) {
         forceLock();
         localStorage.clear();
+        sessionStorage.clear();
     }
 });
 
@@ -83,7 +90,7 @@ window.onload = () => {
     document.addEventListener('touchstart', resetIdleTimer, {passive: true});
 };
 
-// --- COMANDOS ---
+// --- OPERAÇÕES ---
 
 function openLogs() {
     window.open(`https://my.nextdns.io/${NEXT_DNS_ID}/registros`, '_blank');
@@ -92,12 +99,12 @@ function openLogs() {
 function runPrivacyScrub() {
     localStorage.clear();
     sessionStorage.clear();
-    logTerminal("CACHE_PURGED", "#00ff00");
+    logTerminal("RAM_ZEROED", "#00ff00");
 }
 
 function toggleStealth() {
-    const b = document.body.style;
-    b.filter = b.filter.includes("brightness") ? "none" : "brightness(0.01) contrast(25) blur(10px)";
+    const s = document.body.style;
+    s.filter = s.filter.includes("brightness") ? "none" : "brightness(0.01) contrast(30) blur(18px)";
 }
 
 function emergencyWipe() {
@@ -118,10 +125,11 @@ function checkCommand(event) {
             vault.style.opacity = "1";
             startEntropyNoise();
             resetIdleTimer();
-            logTerminal("ENCRYPTED_SESSION_START");
+            logTerminal("AUTH_ALPHA_OK");
+            runNetworkVerify();
         } 
         else if (cmdRaw === HONEYPOT_PASS) {
-            vault.innerHTML = "<div style='padding:20px; color:#111;'>VOLUME_EMPTY</div>";
+            vault.innerHTML = "<div style='padding:20px; color:#111;'>NO_DATA_AVAILABLE</div>";
             vault.style.display = 'block';
             vault.style.visibility = 'visible';
             vault.style.opacity = "1";
@@ -130,7 +138,7 @@ function checkCommand(event) {
             emergencyWipe();
         }
         else {
-            logTerminal("AUTH_ERR", "#ff3b30");
+            logTerminal("ERR_AUTH", "#ff3b30");
             forceLock();
         }
     }
