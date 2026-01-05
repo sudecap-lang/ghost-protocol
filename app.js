@@ -10,11 +10,12 @@ let noiseInterval;
 const output = document.getElementById('terminal-output');
 const vault = document.getElementById('secret-vault');
 
-// INTERCEPTAÇÃO DE LOCALIZAÇÃO (RODA ANTES DE TUDO)
-function injectSpoof() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition = (s, e) => e({code: 1});
-        navigator.geolocation.watchPosition = (s, e) => e({code: 1});
+// GARANTE QUE OS BOTÕES FUNCIONEM
+function unlockUI() {
+    if (vault) {
+        vault.style.pointerEvents = "auto";
+        vault.style.filter = "none";
+        vault.style.opacity = "1";
     }
 }
 
@@ -23,6 +24,7 @@ function forceLock() {
         vault.style.display = 'none';
         vault.style.visibility = 'hidden';
         vault.style.opacity = "0";
+        vault.style.pointerEvents = "none";
     }
     sessionStorage.removeItem('is_auth');
     clearInterval(noiseInterval);
@@ -33,87 +35,85 @@ function logTerminal(msg, color = "#00ffaa") {
     output.scrollTop = output.scrollHeight;
 }
 
-// VERIFICA SE JÁ ESTAVA LOGADO AO VOLTAR PARA A ABA
+// VERIFICA SESSÃO AO VOLTAR
 function checkSessionPersistence() {
     if (sessionStorage.getItem('is_auth') === 'true') {
         vault.style.display = 'block';
         vault.style.visibility = 'visible';
-        vault.style.opacity = "1";
+        unlockUI();
         startEntropyNoise();
         resetIdleTimer();
-        logTerminal("SESSION_RESTORED", "#34c759");
+        logTerminal("RECONNECTED_SECURELY", "#34c759");
         runNetworkVerify();
     }
 }
 
 async function runNetworkVerify() {
-    logTerminal("VERIFYING_IP_STALKER_SHIELD...", "#ff9500");
     try {
         const res = await fetch('https://api.ipify.org?format=json');
         const data = await res.json();
         if (data.ip === "179.191.223.163") {
-            logTerminal("IP_VISIBLE: " + data.ip, "#ff3b30");
-            logTerminal("STATUS: DILUTION_ACTIVE", "#00ffaa");
+            logTerminal("IP_CHECK: EXPOSED (" + data.ip + ")", "#ff3b30");
         } else {
-            logTerminal("STATUS: IP_ENCRYPTED_PATH", "#34c759");
+            logTerminal("IP_CHECK: MASKED_SUCCESS", "#34c759");
         }
     } catch (e) {
-        logTerminal("SHIELD_CONFIRMED", "#34c759");
+        logTerminal("DNS_SHIELD_ACTIVE", "#34c759");
     }
 }
 
 function startEntropyNoise() {
     if(noiseInterval) clearInterval(noiseInterval);
     noiseInterval = setInterval(() => {
-        const nodes = ["https://www.apple.com", "https://www.wikipedia.org"];
-        fetch(`${nodes[Math.floor(Math.random()*nodes.length)]}/?v=${Math.random()}`, { mode: 'no-cors' }).catch(()=>{});
+        fetch(`https://www.apple.com/favicon.ico?v=${Math.random()}`, { mode: 'no-cors' }).catch(()=>{});
     }, 5000); 
 }
 
 function resetIdleTimer() {
     clearTimeout(idleTimer);
     if (vault && vault.style.display === 'block') {
-        vault.style.filter = "none";
-        vault.style.opacity = "1";
+        unlockUI();
         idleTimer = setTimeout(() => {
-            vault.style.filter = "blur(15px) brightness(0.2)";
-        }, 60000); // 60 segundos de tela limpa
+            // Apenas esconde, mas NÃO trava os botões (pointerEvents continua auto)
+            vault.style.filter = "blur(20px) brightness(0.1)";
+        }, 60000); 
     }
 }
 
-// LOGOUT SE FICAR MUITO TEMPO FORA (SEGURANÇA)
+// GESTÃO DE ESTADO DA ABA
 document.addEventListener("visibilitychange", () => {
-    if (document.hidden) {
-        // Não desloga imediatamente, permite 5 minutos de "pulo" entre abas
-        sessionStorage.setItem('last_active', Date.now());
-    } else {
+    if (!document.hidden) {
         const lastActive = sessionStorage.getItem('last_active');
-        if (Date.now() - lastActive > 300000) { // 5 minutos
+        if (lastActive && (Date.now() - lastActive > 600000)) { // 10 min de tolerância
             forceLock();
-            logTerminal("SESSION_EXPIRED_FOR_SAFETY", "#ff3b30");
         } else {
             checkSessionPersistence();
         }
+    } else {
+        sessionStorage.setItem('last_active', Date.now());
     }
 });
 
 window.onload = () => {
-    injectSpoof();
     checkSessionPersistence();
-    document.addEventListener('touchstart', resetIdleTimer, {passive: true});
+    // Qualquer toque na tela reativa os botões
+    document.addEventListener('touchstart', () => { unlockUI(); resetIdleTimer(); }, {passive: true});
+    document.addEventListener('click', () => { unlockUI(); resetIdleTimer(); });
 };
 
-// --- OPERAÇÕES ---
+// --- FUNÇÕES OPERACIONAIS ---
 
 function openLogs() {
+    unlockUI();
     window.open(`https://my.nextdns.io/${NEXT_DNS_ID}/registros`, '_blank');
 }
 
 function runPrivacyScrub() {
+    unlockUI();
     localStorage.clear();
     sessionStorage.clear();
-    forceLock();
-    logTerminal("DEEP_WIPE_COMPLETED", "#ff3b30");
+    logTerminal("WIPE_ALL_TRACES", "#ff3b30");
+    setTimeout(() => location.reload(), 1000);
 }
 
 function checkCommand(event) {
@@ -126,10 +126,10 @@ function checkCommand(event) {
             sessionStorage.setItem('is_auth', 'true');
             vault.style.display = 'block';
             vault.style.visibility = 'visible';
-            vault.style.opacity = "1";
+            unlockUI();
             startEntropyNoise();
             resetIdleTimer();
-            logTerminal("V84_PERSISTENCE_ENABLED");
+            logTerminal("V85_RECOVERY_MODE_ACTIVE");
             runNetworkVerify();
         } 
         else if (cmdRaw === DURESS_PASS) {
