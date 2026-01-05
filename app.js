@@ -6,12 +6,12 @@ const NEXT_DNS_ID = "6ddbfb";
 const output = document.getElementById('terminal-output');
 const vault = document.getElementById('secret-vault');
 
-// GARANTIR ESTADO INICIAL SEGURO E VISÍVEL
+// ESTADO INICIAL: COFRE OCULTO E TELA CLARA
 if (vault) {
     vault.style.display = 'none';
     vault.style.visibility = 'hidden';
 }
-document.body.style.filter = "none"; // Garante que não inicie escuro
+document.body.style.filter = "none";
 
 function logTerminal(msg, color = "#00ffaa") {
     const time = new Date().toLocaleTimeString();
@@ -19,60 +19,79 @@ function logTerminal(msg, color = "#00ffaa") {
     output.scrollTop = output.scrollHeight;
 }
 
+// Função de Diagnóstico de Rede
+async function runNetworkVerify() {
+    logTerminal("INICIANDO SCAN DE REDE...", "#00aaff");
+    try {
+        const res = await fetch(`https://test.nextdns.io/?t=${Date.now()}`);
+        const data = await res.json();
+        if (data.status === "ok" && data.configuration === NEXT_DNS_ID) {
+            logTerminal("SHIELD: VERDE (PERFIL 6DDBFB ATIVO)", "#34c759");
+        } else {
+            logTerminal("SHIELD: LARANJA/VERMELHO (REDE EXPOSTA)", "#ff9500");
+        }
+    } catch (e) {
+        logTerminal("ERRO: FALHA NA CONEXÃO COM O SERVIDOR", "#ff3b30");
+    }
+}
+
 window.onload = () => {
-    logTerminal("SISTEMA GHOST v17.0 ONLINE");
-    logTerminal("SINAL: AGUARDANDO VALIDAÇÃO DE IDENTIDADE...");
+    logTerminal("GHOST_OS v18.0 ONLINE");
+    logTerminal("DIGITE 'VERIFY' PARA SCAN OU A SENHA PARA O COFRE.");
 };
 
 function checkCommand(event) {
     if (event.key === 'Enter') {
         const input = document.getElementById('command-input');
-        const cmd = input.value; 
+        const cmd = input.value; // Mantém original para a senha
+        const cmdLower = cmd.toLowerCase().trim(); // Versão para comandos
         input.value = '';
 
-        // VALIDAÇÃO LITERAL DA SENHA
-        if (cmd === SECRET_PASS) {
-            logTerminal("ACESSO CONCEDIDO. DESBLOQUEANDO COFRE...", "#00ff00");
+        // 1. VERIFICAÇÃO DE COMANDOS
+        if (cmdLower === "verify") {
+            runNetworkVerify();
+        } 
+        else if (cmdLower === "logs") {
+            window.open(`https://my.nextdns.io/${NEXT_DNS_ID}/logs`, '_blank');
+        } 
+        else if (cmdLower === "clear") {
+            output.innerHTML = "";
+            logTerminal("TERMINAL REINICIADO.");
+        }
+        // 2. VERIFICAÇÃO DE SENHA (IDÊNTICA À SUA)
+        else if (cmd === SECRET_PASS) {
+            logTerminal("ACESSO AUTORIZADO. ABRINDO COFRE...", "#00ff00");
             if (vault) {
                 vault.style.display = 'block';
                 vault.style.visibility = 'visible';
                 vault.style.opacity = '1';
             }
         } 
-        else if (cmd.toLowerCase() === "logs") {
-            window.open(`https://my.nextdns.io/${NEXT_DNS_ID}/logs`, '_blank');
-        } 
-        else if (cmd.toLowerCase() === "clear") {
-            output.innerHTML = "";
-            logTerminal("TERMINAL REINICIADO.");
-        }
+        // 3. ERRO
         else {
-            logTerminal(`ERRO: CHAVE INVÁLIDA`, "#ff3b30");
+            logTerminal(`COMANDO OU CHAVE '${cmd}' INVÁLIDA`, "#ff3b30");
         }
     }
 }
 
 function runPrivacyScrub() {
-    logTerminal("LIMPANDO RASTROS DE SESSÃO...");
+    logTerminal("DESTRUINDO CACHE...");
     localStorage.clear();
     sessionStorage.clear();
-    logTerminal("SESSÃO HIGIENIZADA.");
+    logTerminal("LIMPEZA CONCLUÍDA.");
 }
 
 function toggleStealth() {
-    // Se já estiver escuro, volta ao normal. Se não, escurece.
     if (document.body.style.filter.includes("brightness")) {
         document.body.style.filter = "none";
-        logTerminal("MODO STEALTH: DESATIVADO.");
+        logTerminal("MODO STEALTH: OFF");
     } else {
-        // Brilho em 0.5 (50%) e Contraste em 1.5 para leitura tática
         document.body.style.filter = "brightness(0.5) contrast(1.5) grayscale(0.8)";
-        logTerminal("MODO STEALTH: ATIVADO (VISIBILIDADE REDUZIDA).");
+        logTerminal("MODO STEALTH: ON");
     }
 }
 
 function emergencyWipe() {
-    logTerminal("PROTOCOLO DE EMERGÊNCIA! SAINDO...");
     localStorage.clear();
     window.location.replace("https://www.reuters.com");
 }
