@@ -21,10 +21,15 @@
             <input type="password" id="command-input" placeholder="ACCESS_KEY" onkeydown="checkCommand(event)">
         </div>
 
-        <div class="button-stack">
-            <button class="btn-main" onclick="runPrivacyScrub()">SCRUB_DATA</button>
-            <button class="btn-main" onclick="toggleStealth()">GHOST_MODE</button>
-            <button class="btn-danger" onclick="emergencyWipe()">EMERGENCY_WIPE</button>
+        <div id="secret-vault" style="display: none; width: 100%;">
+            <div class="button-stack" style="margin-top: 20px; border-top: 1px solid #333; padding-top: 10px;">
+                <button class="btn-main" onclick="runNetworkVerify()">VERIFY NETWORK</button>
+                <button class="btn-main" onclick="openLogs()">ACCESS LOGS</button>
+                <button class="btn-main" onclick="clearTerminal()">CLEAR TERMINAL</button>
+                <button class="btn-main" onclick="runPrivacyScrub()">PRIVACY SCRUB</button>
+                <button class="btn-main" onclick="toggleStealth()">GHOST MODE</button>
+                <button class="btn-danger" onclick="emergencyWipe()" style="color: #ff3b30; border-color: #ff3b30;">EMERGENCY WIPE</button>
+            </div>
         </div>
     </div>
     <script src="app.js"></script>
