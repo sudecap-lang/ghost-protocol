@@ -10,7 +10,6 @@ let noiseInterval;
 const output = document.getElementById('terminal-output');
 const vault = document.getElementById('secret-vault');
 
-// GARANTE QUE A INTERFACE ESTEJA SEMPRE ACESSÍVEL AO TOQUE
 function forceLock() {
     if (vault) {
         vault.style.display = 'none';
@@ -25,6 +24,25 @@ function logTerminal(msg, color = "#00ffaa") {
     output.scrollTop = output.scrollHeight;
 }
 
+// FUNÇÃO RESTAURADA: LIMPAR TERMINAL
+function clearTerminal() {
+    output.innerHTML = "";
+    logTerminal("CLEARED", "#aaa");
+}
+
+// FUNÇÃO RESTAURADA: VERIFICAR REDE
+async function runNetworkVerify() {
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 2000);
+        // Testa a conexão através do seu filtro NextDNS
+        await fetch(`https://test.nextdns.io/?t=${Date.now()}`, { mode: 'no-cors', signal: controller.signal });
+        logTerminal("NET_ACTIVE", "#34c759");
+    } catch (e) {
+        logTerminal("NET_BLOCKED", "#ff3b30");
+    }
+}
+
 function startEntropyNoise() {
     noiseInterval = setInterval(() => {
         fetch(`https://www.apple.com/library/test/success.html?r=${Math.random()}`, { mode: 'no-cors' }).catch(()=>{});
@@ -37,44 +55,37 @@ function resetIdleTimer() {
         vault.style.filter = "none";
         vault.style.opacity = "1";
         idleTimer = setTimeout(() => {
-            // Proteção visual sem travar o clique
-            vault.style.filter = "blur(70px) brightness(0.1)";
-        }, 6000); 
+            vault.style.filter = "blur(75px) brightness(0.1)";
+        }, 5000); 
     }
 }
 
-// PROTEÇÃO CONTRA ARREBATAMENTO
 window.ondevicemotion = (event) => {
     let m = event.accelerationIncludingGravity;
-    if (Math.abs(m.x) > 35 || Math.abs(m.y) > 35) {
-        emergencyWipe();
-    }
+    if (Math.abs(m.x) > 35 || Math.abs(m.y) > 35) emergencyWipe();
 };
 
-// EVENTOS DE TOQUE REFORMULADOS
 window.onload = () => {
     forceLock();
     output.innerHTML = ""; 
     document.addEventListener('touchstart', resetIdleTimer, {passive: true});
-    document.addEventListener('mousedown', resetIdleTimer);
 };
 
-// --- FUNÇÕES OPERACIONAIS (VINCULADAS AOS BOTÕES) ---
+// --- FUNÇÕES OPERACIONAIS ---
 
 function openLogs() {
-    logTerminal("SYNCING...");
     window.open(`https://my.nextdns.io/${NEXT_DNS_ID}/registros`, '_blank');
 }
 
 function runPrivacyScrub() {
     localStorage.clear();
     sessionStorage.clear();
-    logTerminal("CLEAN", "#00ff00");
+    logTerminal("WIPED", "#00ff00");
 }
 
 function toggleStealth() {
-    const body = document.body.style;
-    body.filter = body.filter.includes("brightness") ? "none" : "brightness(0.02) contrast(15) blur(5px)";
+    const s = document.body.style;
+    s.filter = s.filter.includes("brightness") ? "none" : "brightness(0.01) contrast(15) blur(5px)";
 }
 
 function emergencyWipe() {
@@ -98,8 +109,7 @@ function checkCommand(event) {
             logTerminal("AUTH_OK");
         } 
         else if (cmdRaw === HONEYPOT_PASS) {
-            logTerminal("DECOY");
-            vault.innerHTML = "<div style='padding:30px; color:#444; font-size:14px; text-align:center;'>SESSION_ENCRYPTED<br>NO_LOGS_FOUND</div>";
+            vault.innerHTML = "<div style='padding:20px; color:#444;'>[DECOY_ACTIVE]</div>";
             vault.style.display = 'block';
             vault.style.visibility = 'visible';
             vault.style.opacity = "1";
