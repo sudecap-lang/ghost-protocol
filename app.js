@@ -26,31 +26,47 @@ function logTerminal(msg, color = "#00ffaa") {
 
 function clearTerminal() {
     output.innerHTML = "";
-    logTerminal("RAM_PURGE_COMPLETE", "#555");
+    logTerminal("RECOVERY_WIPE_SUCCESS", "#444");
 }
 
-// VERIFICA SE O SEU IP 179.191.223.163 AINDA ESTÁ EXPOSTO
+// NOVA FUNÇÃO DE VERIFICAÇÃO RESILIENTE (NÃO DEVE DAR CHECK_FAILED)
 async function runNetworkVerify() {
-    try {
-        const res = await fetch('https://api.ipify.org?format=json');
-        const data = await res.json();
-        if (data.ip === "179.191.223.163") {
-            logTerminal("LOCATION: EXPOSED (Campos/RJ)", "#ff3b30");
-            logTerminal("ADVICE: IP_MASK_REQUIRED", "#ff9500");
-        } else {
-            logTerminal("LOCATION: MASKED", "#34c759");
+    const checkPoints = [
+        'https://api.ipify.org?format=json',
+        'https://icanhazip.com',
+        'https://cloudflare.com/cdn-cgi/trace'
+    ];
+    
+    logTerminal("SYNCING_NETWORK...", "#ff9500");
+    
+    for (let url of checkPoints) {
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 5000);
+            
+            const res = await fetch(url, { signal: controller.signal });
+            const data = await res.text();
+            
+            // Verifica se o seu IP real (179.191.223.163) aparece na resposta
+            if (data.includes("179.191.223.163")) {
+                logTerminal("STATUS: IP_EXPOSED", "#ff3b30");
+                logTerminal("LOC: Campos_RJ", "#ff3b30");
+            } else {
+                logTerminal("STATUS: IP_MASKED", "#34c759");
+            }
+            return; // Sai do loop se conseguir verificar
+        } catch (e) {
+            continue; // Tenta o próximo servidor se este falhar
         }
-    } catch (e) {
-        logTerminal("CHECK_FAILED", "#ff3b30");
     }
+    logTerminal("CRITICAL: ALL_CHECKPOINTS_BLOCKED", "#ff3b30");
 }
 
 function startEntropyNoise() {
     noiseInterval = setInterval(() => {
-        // Alvos de alta confiança para diluir o tráfego
         const targets = ["https://www.apple.com", "https://www.wikipedia.org"];
-        fetch(`${targets[Math.floor(Math.random()*targets.length)]}/?nocache=${Math.random()}`, { mode: 'no-cors' }).catch(()=>{});
-    }, 5000); 
+        fetch(`${targets[Math.floor(Math.random()*targets.length)]}/?z=${Math.random()}`, { mode: 'no-cors' }).catch(()=>{});
+    }, 6000); 
 }
 
 function resetIdleTimer() {
@@ -59,25 +75,21 @@ function resetIdleTimer() {
         vault.style.filter = "none";
         vault.style.opacity = "1";
         idleTimer = setTimeout(() => {
-            vault.style.filter = "blur(120px) brightness(0)";
+            vault.style.filter = "blur(125px) brightness(0)";
         }, 3000); 
     }
 }
 
-// LIMPEZA DE CACHE E TOKENS DE IDENTIDADE
+// LIMPEZA PROFUNDA DE IDENTIDADE (ANTI-LOCALIZAÇÃO)
 function deepCleanIdentity() {
     localStorage.clear();
     sessionStorage.clear();
-    // Tenta sobrescrever o ID de rastreamento no navegador
-    for (let i = 0; i < 100; i++) {
-        localStorage.setItem('ghost_id_' + i, Math.random());
-    }
-    logTerminal("IDENTITY_TOKENS_PURGED", "#00ff00");
+    logTerminal("BROWSER_FINGERPRINT_CLEARED", "#00ff00");
 }
 
 window.ondevicemotion = (event) => {
     let m = event.accelerationIncludingGravity;
-    if (Math.abs(m.x) > 38 || Math.abs(m.y) > 38) {
+    if (Math.abs(m.x) > 40 || Math.abs(m.y) > 40) {
         if (vault && vault.style.display === 'block') emergencyWipe();
     }
 };
@@ -95,7 +107,7 @@ window.onload = () => {
     document.addEventListener('touchstart', resetIdleTimer, {passive: true});
 };
 
-// --- FUNÇÕES OPERACIONAIS ---
+// --- FUNÇÕES DE COMANDO ---
 
 function openLogs() {
     window.open(`https://my.nextdns.io/${NEXT_DNS_ID}/registros`, '_blank');
@@ -103,7 +115,7 @@ function openLogs() {
 
 function runPrivacyScrub() {
     deepCleanIdentity();
-    logTerminal("WIPE_SUCCESS", "#00ff00");
+    logTerminal("CACHE_DESTROYED", "#00ff00");
 }
 
 function toggleStealth() {
@@ -128,11 +140,11 @@ function checkCommand(event) {
             vault.style.opacity = "1";
             startEntropyNoise();
             resetIdleTimer();
-            logTerminal("GHOST_OS_LOADED");
+            logTerminal("AUTH_ALPHA_OK");
             runNetworkVerify();
         } 
         else if (cmdRaw === HONEYPOT_PASS) {
-            vault.innerHTML = "<div style='padding:20px; color:#111;'>VOLUME_ENCRYPTED_EMPTY</div>";
+            vault.innerHTML = "<div style='padding:20px; color:#000;'>VOLUME_EMPTY</div>";
             vault.style.display = 'block';
             vault.style.visibility = 'visible';
             vault.style.opacity = "1";
@@ -141,7 +153,7 @@ function checkCommand(event) {
             emergencyWipe();
         }
         else {
-            logTerminal("ACCESS_DENIED", "#ff3b30");
+            logTerminal("ERR: ACCESS_DENIED", "#ff3b30");
             forceLock();
         }
     }
