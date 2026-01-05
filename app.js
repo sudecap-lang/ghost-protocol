@@ -21,26 +21,18 @@ function logTerminal(msg, color = "#00ffaa") {
 
 window.onload = () => {
     forceLock();
-    logTerminal("SISTEMA GHOST v33.0 ONLINE");
-    logTerminal("STATUS: PROTEÇÃO VERDE ATIVA", "#34c759");
+    logTerminal("SISTEMA GHOST v34.0 - IP ANALYSER");
+    logTerminal("NOTA: DNS ATIVO OCULTA DADOS, NÃO O IP FÍSICO.");
 };
 
-// LIMPEZA DE EMERGÊNCIA (PROTOCOLO DE PÂNICO)
-function emergencyWipe() {
-    logTerminal("!!! PROTOCOLO DE EMERGÊNCIA ATIVADO !!!", "#ff3b30");
-    localStorage.clear();
-    sessionStorage.clear();
-    // Redireciona para um site neutro para camuflagem
-    window.location.replace("https://www.reuters.com");
-}
-
 async function runNetworkVerify() {
-    logTerminal("TESTANDO TÚNEL DE SEGURANÇA...", "#00aaff");
+    logTerminal("SOLICITANDO DIAGNÓSTICO DE PRIVACIDADE...", "#00aaff");
     try {
-        await fetch(`https://test.nextdns.io/?t=${Date.now()}`, { mode: 'no-cors' });
-        logTerminal("SHIELD: VERDE (PERFEITO)", "#34c759");
+        const res = await fetch(`https://test.nextdns.io/?t=${Date.now()}`, { mode: 'no-cors' });
+        logTerminal("SHIELD: VERDE (CONTEÚDO PROTEGIDO)", "#34c759");
+        logTerminal("ALERTA: SEU IP É VISÍVEL PELA OPERADORA GIGA MAIS.", "#ff9500");
     } catch (e) {
-        logTerminal("AVISO: INTERFERÊNCIA DETECTADA", "#ff9500");
+        logTerminal("ERRO NA SONDAGEM DE REDE.", "#ff3b30");
     }
 }
 
@@ -54,11 +46,13 @@ function checkCommand(event) {
         if (cmdClean === "verify") {
             runNetworkVerify();
         } 
-        else if (cmdClean === "wipe") { // Atalho para o comando
-            emergencyWipe();
-        }
         else if (cmdClean === "logs") {
+            logTerminal("REQUISITANDO LOGS DE PRIVACIDADE...");
             window.open(`https://my.nextdns.io/${NEXT_DNS_ID}/logs`, '_blank');
+        }
+        else if (cmdClean === "clear") {
+            output.innerHTML = "";
+            logTerminal("TERMINAL REINICIADO.");
         }
         else if (cmdRaw === SECRET_PASS) {
             logTerminal("CHAVE MESTRA ACEITA.", "#00ff00");
@@ -68,15 +62,15 @@ function checkCommand(event) {
             }
         } 
         else {
-            logTerminal(`ERRO: '${cmdRaw}' NÃO RECONHECIDO.`, "#ff3b30");
+            logTerminal(`ERRO: COMANDO '${cmdRaw}' INVÁLIDO.`, "#ff3b30");
             forceLock();
         }
     }
 }
 
-function runPrivacyScrub() {
+function emergencyWipe() {
     localStorage.clear();
-    logTerminal("DADOS DE NAVEGAÇÃO APAGADOS.");
+    window.location.replace("https://www.reuters.com");
 }
 
 function toggleStealth() {
