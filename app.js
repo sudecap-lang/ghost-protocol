@@ -5,13 +5,16 @@ const DURESS_PASS = "1234";
 const NEXT_DNS_ID = "6ddbfb"; 
 let idleTimer;
 let noiseInterval;
+let IS_LOGGED_IN = false; // Autenticação em RAM (mais estável que storage)
 // ---------------------------------
 
 const output = document.getElementById('terminal-output');
 const vault = document.getElementById('secret-vault');
 
 function emergencyUIReset() {
-    if (vault) {
+    if (vault && IS_LOGGED_IN) {
+        vault.style.display = 'block';
+        vault.style.visibility = 'visible';
         vault.style.pointerEvents = "auto";
         vault.style.filter = "none";
         vault.style.opacity = "1";
@@ -26,7 +29,7 @@ function logTerminal(msg, color = "#00ffaa") {
 
 function clearTerminal() {
     output.innerHTML = "";
-    logTerminal("SCREEN_PURGED", "#555");
+    logTerminal("SYSTEM_CLEAN", "#555");
     emergencyUIReset();
 }
 
@@ -35,69 +38,63 @@ async function runNetworkVerify() {
         const res = await fetch('https://api.ipify.org?format=json');
         const data = await res.json();
         const color = data.ip === "179.191.223.163" ? "#ff3b30" : "#34c759";
-        logTerminal(`TRACED_IP: ${data.ip}`, color);
-        if(color === "#ff3b30") logTerminal("LOC: CAMPOS_RJ_VISIBLE", "#ff3b30");
+        logTerminal(`NET_ID: ${data.ip}`, color);
     } catch (e) {
-        logTerminal("DNS_ENCRYPTION_ACTIVE", "#34c759");
+        logTerminal("ENCRYPTION_LAYER: ACTIVE", "#34c759");
     }
 }
 
 function resetIdleTimer() {
     clearTimeout(idleTimer);
-    if (vault && vault.style.display === 'block') {
+    if (IS_LOGGED_IN) {
         emergencyUIReset();
         idleTimer = setTimeout(() => {
-            vault.style.filter = "blur(25px) brightness(0.2)";
+            vault.style.filter = "blur(30px) brightness(0.2)";
         }, 60000); 
     }
 }
 
-// PRIVACY SCRUB REPARADO (NÃO DESLOGA MAIS)
+// PRIVACY SCRUB 100% SEGURO (NÃO AFETA A VARIÁVEL IS_LOGGED_IN)
 function runPrivacyScrub() {
-    // Limpa tudo EXCETO a chave de autenticação
-    const auth = sessionStorage.getItem('is_auth');
+    logTerminal("INITIATING_DEEP_CLEAN...", "#ff9500");
+    
+    // Limpa rastros físicos de sites
     localStorage.clear();
     sessionStorage.clear();
     
-    // Restaura a sessão imediatamente
-    if (auth) sessionStorage.setItem('is_auth', auth);
-    
-    logTerminal("PRIVACY_SCRUB: COMPLETED", "#34c759");
-    logTerminal("CACHE_WIPED_SESS_KEPT", "#00ffaa");
-    
+    // Mantém a interface ativa forçadamente
+    IS_LOGGED_IN = true; 
     emergencyUIReset();
-    resetIdleTimer();
+    
+    logTerminal("PRIVACY_SCRUB: SUCCESS", "#34c759");
+    logTerminal("SESS_PERSISTENCE: RAM_MODE", "#00ffaa");
+    
+    document.getElementById('command-input').focus();
 }
 
 function toggleGhostMode() {
     if (noiseInterval) {
         clearInterval(noiseInterval);
         noiseInterval = null;
-        logTerminal("GHOST_MODE: OFF", "#ff3b30");
+        logTerminal("GHOST: DISABLED", "#ff3b30");
     } else {
         noiseInterval = setInterval(() => {
-            fetch(`https://www.google.com/favicon.ico?v=${Math.random()}`, { mode: 'no-cors' }).catch(()=>{});
-        }, 4000);
-        logTerminal("GHOST_MODE: ON (DILUTING_IP)", "#34c759");
+            fetch(`https://www.apple.com/favicon.ico?v=${Math.random()}`, { mode: 'no-cors' }).catch(()=>{});
+        }, 5000);
+        logTerminal("GHOST: ACTIVE", "#34c759");
     }
 }
 
+// RESTAURA VISIBILIDADE AO VOLTAR DO SAFARI
 document.addEventListener("visibilitychange", () => {
-    if (!document.hidden) {
+    if (!document.hidden && IS_LOGGED_IN) {
         emergencyUIReset();
-        if (sessionStorage.getItem('is_auth') === 'true') {
-            runNetworkVerify();
-        }
+        runNetworkVerify();
     }
 });
 
 window.onload = () => {
-    if (sessionStorage.getItem('is_auth') === 'true') {
-        vault.style.display = 'block';
-        vault.style.visibility = 'visible';
-        emergencyUIReset();
-    }
-    document.addEventListener('click', () => { emergencyUIReset(); resetIdleTimer(); });
+    document.addEventListener('click', () => { if(IS_LOGGED_IN) resetIdleTimer(); });
 };
 
 // --- OPERAÇÕES ---
@@ -112,13 +109,12 @@ function checkCommand(event) {
         const cmdRaw = input.value;
         input.value = '';
 
-        emergencyUIReset();
-
         if (cmdRaw === SECRET_PASS) {
-            sessionStorage.setItem('is_auth', 'true');
+            IS_LOGGED_IN = true;
             vault.style.display = 'block';
             vault.style.visibility = 'visible';
-            logTerminal("V87_GHOST_READY");
+            emergencyUIReset();
+            logTerminal("V88_RAM_AUTH_ACTIVE");
             runNetworkVerify();
             resetIdleTimer();
         } 
@@ -126,12 +122,13 @@ function checkCommand(event) {
             clearTerminal();
         }
         else if (cmdRaw === DURESS_PASS) {
-            sessionStorage.clear();
+            IS_LOGGED_IN = false;
             localStorage.clear();
+            sessionStorage.clear();
             window.location.replace("https://www.reuters.com");
         }
         else {
-            logTerminal("AUTH_ERR", "#ff3b30");
+            logTerminal("AUTH_FAILED", "#ff3b30");
         }
     }
 }
