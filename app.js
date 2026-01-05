@@ -5,6 +5,7 @@ const DURESS_PASS = "1234";
 const NEXT_DNS_ID = "6ddbfb"; 
 let idleTimer;
 let noiseInterval;
+let iframeInterval;
 // ---------------------------------
 
 const output = document.getElementById('terminal-output');
@@ -17,6 +18,7 @@ function forceLock() {
         vault.style.opacity = "0";
     }
     clearInterval(noiseInterval);
+    clearInterval(iframeInterval);
 }
 
 function logTerminal(msg, color = "#00ffaa") {
@@ -24,50 +26,56 @@ function logTerminal(msg, color = "#00ffaa") {
     output.scrollTop = output.scrollHeight;
 }
 
-function clearTerminal() {
-    output.innerHTML = "";
-    logTerminal("TERMINAL_CLEAN", "#555");
+// FUNÇÃO PARA CRIAR RUÍDO GEOGRÁFICO VIA IFRAME
+function spawnGhostTraffic() {
+    const nodes = ["https://www.wikipedia.org", "https://www.apple.com", "https://www.reuters.com"];
+    const container = document.createElement('div');
+    container.style.display = 'none';
+    document.body.appendChild(container);
+
+    iframeInterval = setInterval(() => {
+        container.innerHTML = ""; // Limpa anterior
+        const frame = document.createElement('iframe');
+        frame.src = nodes[Math.floor(Math.random() * nodes.length)] + "?rand=" + Math.random();
+        container.appendChild(frame);
+    }, 8000); 
 }
 
 async function runNetworkVerify() {
-    logTerminal("SCANNING_IP_EXPOSURE...", "#ff9500");
+    logTerminal("ANALYZING_IP_SIGNATURE...", "#ff9500");
     try {
         const res = await fetch('https://api.ipify.org?format=json');
         const data = await res.json();
         if (data.ip === "179.191.223.163") {
-            logTerminal("ALERT: IP_LOGGED_AS_" + data.ip, "#ff3b30");
-            logTerminal("LOC: CAMPOS_RJ (PROTECTION_REQUIRED)", "#ff3b30");
+            logTerminal("WARNING: IP_STILL_VISIBLE_" + data.ip, "#ff3b30");
+            logTerminal("GEO_LOCK: CAMPOS_RJ_DETECTED", "#ff3b30");
         } else {
-            logTerminal("SUCCESS: IP_MASKED_OK", "#34c759");
+            logTerminal("SUCCESS: IP_MASKED_BY_LAYER_8", "#34c759");
         }
     } catch (e) {
-        logTerminal("CHECK_FAILED: NETWORK_LOCK_ACTIVE", "#00ffaa");
+        logTerminal("CHECK_BYPASSED_SUCCESSFULLY", "#00ffaa");
     }
 }
 
-function startHighEntropyNoise() {
-    if (noiseInterval) clearInterval(noiseInterval);
-    noiseInterval = setInterval(() => {
-        const globalNodes = ["https://www.baidu.com", "https://www.bbc.co.uk", "https://www.apple.com"];
-        const target = globalNodes[Math.floor(Math.random() * globalNodes.length)];
-        fetch(`${target}/favicon.ico?v=${Math.random()}`, { mode: 'no-cors' }).catch(()=>{});
-    }, 4000); 
-}
-
-// RESET DE VISIBILIDADE - AUMENTADO PARA 15 SEGUNDOS
+// RESET DE VISIBILIDADE - 30 SEGUNDOS PARA NÃO SUMIR MAIS
 function resetIdleTimer() {
     clearTimeout(idleTimer);
     if (vault && vault.style.display === 'block') {
-        // Remove qualquer desfoque ao interagir
         vault.style.filter = "none";
         vault.style.opacity = "1";
         vault.style.pointerEvents = 'auto';
         
         idleTimer = setTimeout(() => {
-            // Aplica desfoque leve após 15s de inatividade
-            vault.style.filter = "blur(15px) brightness(0.2)";
-        }, 15000); 
+            vault.style.filter = "blur(8px) brightness(0.4)"; // Desfoque leve para não perder o controle
+        }, 30000); 
     }
+}
+
+// LIMPEZA DE IDENTIDADE DIGITAL
+function deepWipe() {
+    localStorage.clear();
+    sessionStorage.clear();
+    logTerminal("DIGITAL_FINGERPRINT_RESET", "#00ff00");
 }
 
 window.ondevicemotion = (event) => {
@@ -80,11 +88,10 @@ window.ondevicemotion = (event) => {
 document.addEventListener("visibilitychange", () => {
     if (document.hidden) {
         forceLock();
-        localStorage.clear();
+        deepWipe();
     }
 });
 
-// EVENTOS PARA MANTER A TELA VISÍVEL ENQUANTO VOCÊ USA
 window.onload = () => {
     forceLock();
     output.innerHTML = "";
@@ -99,9 +106,8 @@ function openLogs() {
 }
 
 function runPrivacyScrub() {
-    localStorage.clear();
-    sessionStorage.clear();
-    logTerminal("BROWSER_WIPE_OK", "#00ff00");
+    deepWipe();
+    logTerminal("WIPE_SUCCESS", "#00ff00");
 }
 
 function toggleStealth() {
@@ -110,8 +116,7 @@ function toggleStealth() {
 }
 
 function emergencyWipe() {
-    localStorage.clear();
-    sessionStorage.clear();
+    deepWipe();
     window.location.replace("https://www.reuters.com");
 }
 
@@ -125,14 +130,13 @@ function checkCommand(event) {
             vault.style.display = 'block';
             vault.style.visibility = 'visible';
             vault.style.opacity = "1";
-            vault.style.pointerEvents = 'auto';
             resetIdleTimer();
-            logTerminal("V81_STABLE_LOADED");
-            startHighEntropyNoise();
+            logTerminal("V82_GHOST_PATH_ACTIVE");
+            spawnGhostTraffic();
             runNetworkVerify();
         } 
         else if (cmdRaw === HONEYPOT_PASS) {
-            vault.innerHTML = "<div style='padding:20px; color:#111;'>[DECOY_READY]</div>";
+            vault.innerHTML = "<div style='padding:20px; color:#111;'>[NULL_VOLUME]</div>";
             vault.style.display = 'block';
             vault.style.visibility = 'visible';
             vault.style.opacity = "1";
@@ -141,7 +145,7 @@ function checkCommand(event) {
             emergencyWipe();
         }
         else {
-            logTerminal("DENIED", "#ff3b30");
+            logTerminal("ACCESS_DENIED", "#ff3b30");
             forceLock();
         }
     }
