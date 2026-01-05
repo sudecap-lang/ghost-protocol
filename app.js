@@ -6,8 +6,8 @@ const NEXT_DNS_ID = "6ddbfb";
 const output = document.getElementById('terminal-output');
 const vault = document.getElementById('secret-vault');
 
-// BLOQUEIO INICIAL DO COFRE
-if (vault) vault.style.display = 'none';
+// BLOQUEIO TOTAL DE INICIALIZAÇÃO
+if (vault) vault.setAttribute('style', 'display: none !important');
 
 function logTerminal(msg, color = "#00ffaa") {
     const time = new Date().toLocaleTimeString();
@@ -16,24 +16,24 @@ function logTerminal(msg, color = "#00ffaa") {
 }
 
 window.onload = () => {
-    logTerminal("SISTEMA GHOST v14.0 ONLINE");
-    checkDNSStatus();
+    logTerminal("SISTEMA GHOST v15.0 - SEGURANÇA MÁXIMA");
+    checkDNSIdentity();
 };
 
-async function checkDNSStatus() {
+async function checkDNSIdentity() {
     try {
         const res = await fetch(`https://test.nextdns.io/?t=${Date.now()}`);
         const data = await res.json();
         
         if (data.status === "ok" && data.configuration === NEXT_DNS_ID) {
-            logTerminal("SHIELD: VERDE (PERFIL ATIVO)", "#34c759");
+            logTerminal("SHIELD: VERDE (PERFIL 6DDBFB ATIVO)", "#34c759");
         } else if (data.status === "ok") {
-            logTerminal("SHIELD: LARANJA (CONFIGURAÇÃO GENÉRICA)", "#ff9500");
+            logTerminal("SHIELD: LARANJA (IP VINCULADO, MAS CONFIGURAÇÃO AUSENTE)", "#ff9500");
         } else {
-            logTerminal("SHIELD: VERMELHO (SISTEMA EXPOSTO)", "#ff3b30");
+            logTerminal("SHIELD: VERMELHO (REDE EXPOSTA)", "#ff3b30");
         }
     } catch (e) {
-        logTerminal("ERRO: FALHA NA VERIFICAÇÃO DE REDE", "#ff3b30");
+        logTerminal("ERRO CRÍTICO NA VERIFICAÇÃO", "#ff3b30");
     }
 }
 
@@ -43,36 +43,36 @@ function checkCommand(event) {
         const cmd = input.value;
         input.value = '';
 
-        // VALIDAÇÃO RÍGIDA DE ACESSO
+        // VALIDAÇÃO COM TRAVA DE SEGURANÇA
         if (cmd === SECRET_PASS) {
-            logTerminal("ACESSO AO COFRE CONCEDIDO", "#00ff00");
-            vault.style.display = 'block';
+            logTerminal("CREDENCIAIS ACEITAS. DESBLOQUEANDO COFRE...", "#00ff00");
+            vault.setAttribute('style', 'display: block !important');
         } else if (cmd.toLowerCase() === "link") {
-            logTerminal("REQUISITANDO VINCULAÇÃO DE IP...");
-            window.open(`https://my.nextdns.io/${NEXT_DNS_ID}/setup`, '_blank');
+            logTerminal("REQUISITANDO ATUALIZAÇÃO DE IP...");
+            window.open("https://link-ip.nextdns.io/6ddbfb/73f17667f1ec9cf8", "_blank");
         } else if (cmd.toLowerCase() === "logs") {
             window.open(`https://my.nextdns.io/${NEXT_DNS_ID}/logs`, '_blank');
         } else {
-            logTerminal("COMANDO INVÁLIDO OU ACESSO NEGADO", "#ff3b30");
-            vault.style.display = 'none';
+            logTerminal("ACESSO NEGADO.", "#ff3b30");
+            vault.setAttribute('style', 'display: none !important');
         }
     }
 }
 
 function runPrivacyScrub() {
-    logTerminal("LIMPANDO DADOS DE NAVEGAÇÃO...");
+    logTerminal("DESTRUINDO ESTRUTURAS DE CACHE...");
     localStorage.clear();
     sessionStorage.clear();
-    logTerminal("LIMPEZA CONCLUÍDA.");
+    logTerminal("LIMPEZA_SESSÃO: SUCESSO.");
 }
 
 function toggleStealth() {
-    logTerminal("MODO GHOST ATIVADO.");
-    document.body.style.filter = "brightness(0.3) contrast(1.2) grayscale(1)";
+    logTerminal("CAMUFLAGEM VISUAL ACIONADA.");
+    document.body.style.filter = "brightness(0.2) contrast(1.4) grayscale(1)";
 }
 
 function emergencyWipe() {
-    logTerminal("DESTRUINDO SESSÃO...");
+    logTerminal("ALERTA DE INTRUSÃO! APAGANDO...");
     localStorage.clear();
-    window.location.replace("https://www.google.com");
+    window.location.replace("https://www.reuters.com");
 }
