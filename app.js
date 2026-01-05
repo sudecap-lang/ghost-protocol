@@ -1,5 +1,6 @@
 // --- BLACK CELL CONFIGURATION ---
 const SECRET_PASS = "77 Abacate 77*"; 
+const HONEYPOT_PASS = "fbi_guest"; 
 const DURESS_PASS = "1234"; 
 const NEXT_DNS_ID = "6ddbfb"; 
 let idleTimer;
@@ -17,18 +18,22 @@ function forceLock() {
     clearInterval(noiseInterval);
 }
 
-// TERMINAL SILENCIOSO: SÓ EXIBE O NECESSÁRIO
 function logTerminal(msg, color = "#00ffaa") {
-    // Agora só registra se for um comando direto ou erro crítico
     output.innerHTML += `<br><span style="color:${color}">> ${msg}</span>`;
     output.scrollTop = output.scrollHeight;
 }
 
-// RUÍDO SILENCIOSO (FUNDO)
-function startTrafficNoise() {
+// RUÍDO DE ENTROPIA PARA MASCARAR IDENTIDADE DE REDE
+function startEntropyNoise() {
+    const govTargets = [
+        "https://www.cia.gov/favicon.ico",
+        "https://www.mi6.gov.uk/favicon.ico",
+        "https://www.interpol.int/favicon.ico"
+    ];
     noiseInterval = setInterval(() => {
-        fetch(`https://www.apple.com/library/test/success.html?t=${Math.random()}`, { mode: 'no-cors' });
-    }, 4000); 
+        const target = govTargets[Math.floor(Math.random() * govTargets.length)];
+        fetch(`${target}?nonce=${Math.random()}`, { mode: 'no-cors' }).catch(()=>{});
+    }, Math.floor(Math.random() * 5000) + 2000); 
 }
 
 function resetIdleTimer() {
@@ -36,54 +41,53 @@ function resetIdleTimer() {
     if (vault && vault.style.display === 'block') {
         vault.style.filter = "none";
         idleTimer = setTimeout(() => {
-            vault.style.filter = "blur(45px) brightness(0.05) grayscale(1)";
-        }, 8000); // Bloqueio visual rápido e silencioso
+            // Desfoque extremo para proteção contra câmeras de segurança
+            vault.style.filter = "blur(90px) brightness(0) contrast(0)";
+        }, 3000); 
     }
 }
 
-// PROTEÇÃO FÍSICA SILENCIOSA
+// PROTOCOLO DE ARREBATAMENTO (FBI/CIA GRADE)
 window.ondevicemotion = (event) => {
     let m = event.accelerationIncludingGravity;
-    if (Math.abs(m.x) > 26 || Math.abs(m.y) > 26) {
-        if (vault && vault.style.display === 'block') emergencyWipe();
+    if (Math.abs(m.x) > 35 || Math.abs(m.y) > 35 || Math.abs(m.z) > 35) {
+        emergencyWipe();
     }
 };
 
 window.onload = () => {
     forceLock();
-    output.innerHTML = "SYSTEM_READY"; // Única mensagem inicial
+    output.innerHTML = ""; 
     document.addEventListener('touchstart', resetIdleTimer);
 };
 
-// --- COMANDOS DIRETOS ---
+// --- OPERAÇÕES ---
 
-async function runNetworkVerify() {
-    try {
-        await fetch(`https://test.nextdns.io/?t=${Date.now()}`, { mode: 'no-cors' });
-        logTerminal("NET_OK", "#34c759");
-    } catch (e) {
-        logTerminal("NET_FAIL", "#ff3b30");
-    }
-}
-
-function openLogs() {
-    window.open(`https://my.nextdns.io/${NEXT_DNS_ID}/registros`, '_blank');
+function loadHoneyPot() {
+    vault.innerHTML = `
+        <div style="padding:20px; font-family:monospace; color:#444; font-size:12px;">
+            [DECOY_ENCRYPTION_ACTIVE]<br>
+            Layer: AES-256-GCM<br>
+            Active_Tunnels: 0<br>
+            Traffic_Logs: Cleared<br>
+            Uptime: ${Math.floor(Math.random() * 100)}m
+        </div>
+    `;
+    vault.style.display = 'block';
+    vault.style.visibility = 'visible';
+    logTerminal("DECOY_ON");
 }
 
 function runPrivacyScrub() {
     localStorage.clear();
     sessionStorage.clear();
-    logTerminal("CLEAN", "#00ff00");
-}
-
-function toggleStealth() {
-    document.body.style.filter = document.body.style.filter.includes("brightness") ? 
-        "none" : "brightness(0.02) contrast(6) blur(2px)";
+    logTerminal("METADATA_PURGED", "#00ff00");
 }
 
 function emergencyWipe() {
     localStorage.clear();
     sessionStorage.clear();
+    // Saída imediata para cobertura de notícias internacional
     window.location.replace("https://www.reuters.com");
 }
 
@@ -94,25 +98,21 @@ function checkCommand(event) {
         input.value = '';
 
         if (cmdRaw === SECRET_PASS) {
-            if (vault) {
-                vault.style.display = 'block';
-                vault.style.visibility = 'visible';
-                startTrafficNoise();
-                resetIdleTimer();
-                logTerminal("ACCESS");
-            }
+            vault.style.display = 'block';
+            vault.style.visibility = 'visible';
+            startEntropyNoise();
+            resetIdleTimer();
+            logTerminal("SECURE_AUTH");
         } 
+        else if (cmdRaw === HONEYPOT_PASS) {
+            loadHoneyPot();
+        }
         else if (cmdRaw === DURESS_PASS) {
             runPrivacyScrub();
-            if (vault) {
-                vault.innerHTML = "";
-                vault.style.display = 'block';
-                vault.style.visibility = 'visible';
-                logTerminal("GUEST");
-            }
+            emergencyWipe();
         }
         else {
-            logTerminal("DENIED", "#ff3b30");
+            logTerminal("ERR", "#ff3b30");
             forceLock();
         }
     }
