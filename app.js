@@ -22,52 +22,48 @@ function logTerminal(msg, color = "#00ffaa") {
 
 window.onload = () => {
     forceLock();
-    logTerminal("GHOST_OS v40.0 - MEMORY PROTECTED");
+    logTerminal("GHOST_OS v42.0 - ANONYMITY_LAYER_ACTIVE");
 };
 
-// --- DESTRUCTION PROTOCOLS ---
-
-function runPrivacyScrub() {
-    // This removes every trace from the browser's permanent storage
-    localStorage.clear();
-    sessionStorage.clear();
-    logTerminal("LOCALSTORAGE_PURGED: OK");
-    logTerminal("SESSION_FLUSHED: OK");
-}
-
-function emergencyWipe() {
-    runPrivacyScrub();
-    logTerminal("INITIATING SUDO_WIPE...", "#ff3b30");
-    setTimeout(() => {
-        window.location.replace("https://www.reuters.com");
-    }, 500);
-}
-
-// --- OPERATIONAL FUNCTIONS ---
+// --- ACTION FUNCTIONS ---
 
 async function runNetworkVerify() {
-    logTerminal("NETWORK_PROBE_START...", "#00aaff");
+    logTerminal("SCANNING_NETWORK_INTEGRITY...", "#00aaff");
     try {
         await fetch(`https://test.nextdns.io/?t=${Date.now()}`, { mode: 'no-cors' });
-        logTerminal("ENCRYPTION_STATUS: GREEN", "#34c759");
+        logTerminal("DNS_SHIELD: GREEN", "#34c759");
     } catch (e) {
-        logTerminal("ENCRYPTION_STATUS: HIJACKED", "#ff3b30");
+        logTerminal("DNS_SHIELD: WARNING", "#ff9500");
     }
 }
 
 function openLogs() {
-    logTerminal("RELAYING_TO_LOG_SERVER...");
+    logTerminal("FETCHING_REMOTE_LOGS...");
     window.open(`https://my.nextdns.io/${NEXT_DNS_ID}/logs`, '_blank');
 }
 
 function clearTerminal() {
     output.innerHTML = "";
-    logTerminal("TERMINAL_FLUSHED.");
+    logTerminal("TERMINAL_BUFFER_CLEARED.");
+}
+
+function runPrivacyScrub() {
+    localStorage.clear();
+    sessionStorage.clear();
+    logTerminal("LOCAL_DATA_PURGED.");
+}
+
+function emergencyWipe() {
+    runPrivacyScrub();
+    logTerminal("EXECUTING_SUDO_WIPE...", "#ff3b30");
+    setTimeout(() => {
+        window.location.replace("https://www.reuters.com");
+    }, 400);
 }
 
 function toggleStealth() {
     document.body.style.filter = document.body.style.filter.includes("brightness") ? "none" : "brightness(0.6) contrast(1.2)";
-    logTerminal("VISUAL_STEALTH_TOGGLED");
+    logTerminal("UI_STEALTH_MODE_TOGGLED");
 }
 
 // --- ACCESS LOGIC ---
@@ -86,16 +82,16 @@ function checkCommand(event) {
             }
         } 
         else if (cmdRaw === DURESS_PASS) {
-            logTerminal("AUTH_SUCCESS: ACCESS_LEVEL_GUEST", "#00ff00");
-            runPrivacyScrub(); // Silently wipes the real keys
+            logTerminal("AUTH_SUCCESS: GUEST_REDIRECT", "#00ff00");
+            runPrivacyScrub();
             if (vault) {
-                vault.innerHTML = "<div style='padding:20px; color:#aaa;'>[Guest Mode]<br>Recent Documents:<br>- recipe_list.txt<br>- backup_log_04.log</div>";
+                vault.innerHTML = "<div style='padding:20px; color:#666;'>No sensitive data stored in this session.</div>";
                 vault.style.display = 'block';
                 vault.style.visibility = 'visible';
             }
         }
         else {
-            logTerminal("AUTH_FAILURE: ACCESS_DENIED", "#ff3b30");
+            logTerminal("AUTH_FAILURE: UNAUTHORIZED", "#ff3b30");
             forceLock();
         }
     }
