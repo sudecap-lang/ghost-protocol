@@ -26,29 +26,31 @@ function logTerminal(msg, color = "#00ffaa") {
 
 function clearTerminal() {
     output.innerHTML = "";
-    logTerminal("BUFFER_PURGED", "#444");
+    logTerminal("RAM_PURGE_COMPLETE", "#555");
 }
 
-// VALIDAÇÃO DE REDE COM FOCO EM ANONIMATO EDNS
+// VERIFICA SE O SEU IP 179.191.223.163 AINDA ESTÁ EXPOSTO
 async function runNetworkVerify() {
     try {
-        const controller = new AbortController();
-        setTimeout(() => controller.abort(), 2000);
-        await fetch(`https://test.nextdns.io/?edns=check&t=${Date.now()}`, { mode: 'no-cors', signal: controller.signal });
-        logTerminal("EDNS_SHIELD: ACTIVE", "#34c759");
-        logTerminal("IP_GEOLOCATION: MASKED", "#34c759");
+        const res = await fetch('https://api.ipify.org?format=json');
+        const data = await res.json();
+        if (data.ip === "179.191.223.163") {
+            logTerminal("LOCATION: EXPOSED (Campos/RJ)", "#ff3b30");
+            logTerminal("ADVICE: IP_MASK_REQUIRED", "#ff9500");
+        } else {
+            logTerminal("LOCATION: MASKED", "#34c759");
+        }
     } catch (e) {
-        logTerminal("EDNS_SHIELD: UNKNOWN", "#ff9500");
+        logTerminal("CHECK_FAILED", "#ff3b30");
     }
 }
 
 function startEntropyNoise() {
     noiseInterval = setInterval(() => {
-        // Alvos que respeitam a anonimização de sub-rede
-        const targets = ["https://en.wikipedia.org", "https://www.apple.com/library/test/success.html"];
-        const target = targets[Math.floor(Math.random() * targets.length)];
-        fetch(`${target}?z=${Math.random()}`, { mode: 'no-cors' }).catch(()=>{});
-    }, 5500); 
+        // Alvos de alta confiança para diluir o tráfego
+        const targets = ["https://www.apple.com", "https://www.wikipedia.org"];
+        fetch(`${targets[Math.floor(Math.random()*targets.length)]}/?nocache=${Math.random()}`, { mode: 'no-cors' }).catch(()=>{});
+    }, 5000); 
 }
 
 function resetIdleTimer() {
@@ -57,14 +59,22 @@ function resetIdleTimer() {
         vault.style.filter = "none";
         vault.style.opacity = "1";
         idleTimer = setTimeout(() => {
-            // Desfoque extremo para proteção física
-            vault.style.filter = "blur(110px) brightness(0)";
-            logTerminal("IDLE_OBSCURE", "#555");
-        }, 3500); 
+            vault.style.filter = "blur(120px) brightness(0)";
+        }, 3000); 
     }
 }
 
-// SENSOR DE ARREBATAMENTO
+// LIMPEZA DE CACHE E TOKENS DE IDENTIDADE
+function deepCleanIdentity() {
+    localStorage.clear();
+    sessionStorage.clear();
+    // Tenta sobrescrever o ID de rastreamento no navegador
+    for (let i = 0; i < 100; i++) {
+        localStorage.setItem('ghost_id_' + i, Math.random());
+    }
+    logTerminal("IDENTITY_TOKENS_PURGED", "#00ff00");
+}
+
 window.ondevicemotion = (event) => {
     let m = event.accelerationIncludingGravity;
     if (Math.abs(m.x) > 38 || Math.abs(m.y) > 38) {
@@ -75,8 +85,7 @@ window.ondevicemotion = (event) => {
 document.addEventListener("visibilitychange", () => {
     if (document.hidden) {
         forceLock();
-        localStorage.clear();
-        sessionStorage.clear();
+        deepCleanIdentity();
     }
 });
 
@@ -86,26 +95,24 @@ window.onload = () => {
     document.addEventListener('touchstart', resetIdleTimer, {passive: true});
 };
 
-// --- OPERAÇÕES ---
+// --- FUNÇÕES OPERACIONAIS ---
 
 function openLogs() {
     window.open(`https://my.nextdns.io/${NEXT_DNS_ID}/registros`, '_blank');
 }
 
 function runPrivacyScrub() {
-    localStorage.clear();
-    sessionStorage.clear();
-    logTerminal("METADATA_CLEANED", "#00ff00");
+    deepCleanIdentity();
+    logTerminal("WIPE_SUCCESS", "#00ff00");
 }
 
 function toggleStealth() {
     const s = document.body.style;
-    s.filter = s.filter.includes("brightness") ? "none" : "brightness(0.01) contrast(30) blur(20px)";
+    s.filter = s.filter.includes("brightness") ? "none" : "brightness(0.01) contrast(40) blur(20px)";
 }
 
 function emergencyWipe() {
-    localStorage.clear();
-    sessionStorage.clear();
+    deepCleanIdentity();
     window.location.replace("https://www.reuters.com");
 }
 
@@ -121,11 +128,11 @@ function checkCommand(event) {
             vault.style.opacity = "1";
             startEntropyNoise();
             resetIdleTimer();
-            logTerminal("AUTH_ALPHA_ACTIVE");
+            logTerminal("GHOST_OS_LOADED");
             runNetworkVerify();
         } 
         else if (cmdRaw === HONEYPOT_PASS) {
-            vault.innerHTML = "<div style='padding:20px; color:#111; font-size:12px;'>ENCRYPTED_FILES: NULL<br>EDNS_STATUS: SECURE</div>";
+            vault.innerHTML = "<div style='padding:20px; color:#111;'>VOLUME_ENCRYPTED_EMPTY</div>";
             vault.style.display = 'block';
             vault.style.visibility = 'visible';
             vault.style.opacity = "1";
@@ -134,7 +141,7 @@ function checkCommand(event) {
             emergencyWipe();
         }
         else {
-            logTerminal("ERR_AUTH", "#ff3b30");
+            logTerminal("ACCESS_DENIED", "#ff3b30");
             forceLock();
         }
     }
