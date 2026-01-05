@@ -10,8 +10,8 @@ let noiseInterval;
 const output = document.getElementById('terminal-output');
 const vault = document.getElementById('secret-vault');
 
-// GARANTE QUE OS BOTÕES FUNCIONEM
-function unlockUI() {
+// GARANTE QUE OS BOTÕES E INPUT ESTEJAM SEMPRE ACESSÍVEIS
+function emergencyUIReset() {
     if (vault) {
         vault.style.pointerEvents = "auto";
         vault.style.filter = "none";
@@ -19,32 +19,31 @@ function unlockUI() {
     }
 }
 
-function forceLock() {
-    if (vault) {
-        vault.style.display = 'none';
-        vault.style.visibility = 'hidden';
-        vault.style.opacity = "0";
-        vault.style.pointerEvents = "none";
-    }
-    sessionStorage.removeItem('is_auth');
-    clearInterval(noiseInterval);
-}
-
 function logTerminal(msg, color = "#00ffaa") {
+    if (!output) return;
     output.innerHTML += `<br><span style="color:${color}">> ${msg}</span>`;
     output.scrollTop = output.scrollHeight;
 }
 
-// VERIFICA SESSÃO AO VOLTAR
-function checkSessionPersistence() {
-    if (sessionStorage.getItem('is_auth') === 'true') {
-        vault.style.display = 'block';
-        vault.style.visibility = 'visible';
-        unlockUI();
-        startEntropyNoise();
-        resetIdleTimer();
-        logTerminal("RECONNECTED_SECURELY", "#34c759");
-        runNetworkVerify();
+// FUNÇÃO CLEAR TERMINAL (REPARADA)
+function clearTerminal() {
+    output.innerHTML = "";
+    logTerminal("TERMINAL_BUFFER_REBUILT", "#444");
+    emergencyUIReset();
+}
+
+// GHOST MODE: RUÍDO DE REDE PARA DILUIR IP 179.191.223.163
+function toggleGhostMode() {
+    if (noiseInterval) {
+        clearInterval(noiseInterval);
+        noiseInterval = null;
+        logTerminal("GHOST_MODE: DISABLED", "#ff3b30");
+    } else {
+        logTerminal("GHOST_MODE: INITIALIZING...", "#00ffaa");
+        noiseInterval = setInterval(() => {
+            fetch(`https://www.apple.com/library/test/success.html?t=${Math.random()}`, { mode: 'no-cors' }).catch(()=>{});
+        }, 4000);
+        logTerminal("GHOST_MODE: ACTIVE (DILUTING_TRAFFIC)", "#34c759");
     }
 }
 
@@ -52,68 +51,54 @@ async function runNetworkVerify() {
     try {
         const res = await fetch('https://api.ipify.org?format=json');
         const data = await res.json();
-        if (data.ip === "179.191.223.163") {
-            logTerminal("IP_CHECK: EXPOSED (" + data.ip + ")", "#ff3b30");
-        } else {
-            logTerminal("IP_CHECK: MASKED_SUCCESS", "#34c759");
-        }
+        const color = data.ip === "179.191.223.163" ? "#ff3b30" : "#34c759";
+        logTerminal(`CURRENT_NET_IP: ${data.ip}`, color);
     } catch (e) {
-        logTerminal("DNS_SHIELD_ACTIVE", "#34c759");
+        logTerminal("NETWORK_ENCRYPTION_ACTIVE", "#34c759");
     }
-}
-
-function startEntropyNoise() {
-    if(noiseInterval) clearInterval(noiseInterval);
-    noiseInterval = setInterval(() => {
-        fetch(`https://www.apple.com/favicon.ico?v=${Math.random()}`, { mode: 'no-cors' }).catch(()=>{});
-    }, 5000); 
 }
 
 function resetIdleTimer() {
     clearTimeout(idleTimer);
     if (vault && vault.style.display === 'block') {
-        unlockUI();
+        emergencyUIReset();
         idleTimer = setTimeout(() => {
-            // Apenas esconde, mas NÃO trava os botões (pointerEvents continua auto)
-            vault.style.filter = "blur(20px) brightness(0.1)";
+            vault.style.filter = "blur(25px) brightness(0.2)";
         }, 60000); 
     }
 }
 
-// GESTÃO DE ESTADO DA ABA
+// GESTÃO DE PERSISTÊNCIA
 document.addEventListener("visibilitychange", () => {
     if (!document.hidden) {
-        const lastActive = sessionStorage.getItem('last_active');
-        if (lastActive && (Date.now() - lastActive > 600000)) { // 10 min de tolerância
-            forceLock();
-        } else {
-            checkSessionPersistence();
+        emergencyUIReset();
+        if (sessionStorage.getItem('is_auth') === 'true') {
+            logTerminal("RE-SYNCING_SESSION...", "#555");
+            runNetworkVerify();
         }
-    } else {
-        sessionStorage.setItem('last_active', Date.now());
     }
 });
 
 window.onload = () => {
-    checkSessionPersistence();
-    // Qualquer toque na tela reativa os botões
-    document.addEventListener('touchstart', () => { unlockUI(); resetIdleTimer(); }, {passive: true});
-    document.addEventListener('click', () => { unlockUI(); resetIdleTimer(); });
+    if (sessionStorage.getItem('is_auth') === 'true') {
+        vault.style.display = 'block';
+        vault.style.visibility = 'visible';
+        emergencyUIReset();
+    }
+    document.addEventListener('click', () => { emergencyUIReset(); resetIdleTimer(); });
 };
 
-// --- FUNÇÕES OPERACIONAIS ---
+// --- COMANDOS ATIVOS ---
 
 function openLogs() {
-    unlockUI();
     window.open(`https://my.nextdns.io/${NEXT_DNS_ID}/registros`, '_blank');
 }
 
 function runPrivacyScrub() {
-    unlockUI();
     localStorage.clear();
     sessionStorage.clear();
-    logTerminal("WIPE_ALL_TRACES", "#ff3b30");
-    setTimeout(() => location.reload(), 1000);
+    logTerminal("CORE_WIPE_EXECUTED", "#ff3b30");
+    setTimeout(() => location.reload(), 800);
 }
 
 function checkCommand(event) {
@@ -122,23 +107,25 @@ function checkCommand(event) {
         const cmdRaw = input.value;
         input.value = '';
 
+        emergencyUIReset();
+
         if (cmdRaw === SECRET_PASS) {
             sessionStorage.setItem('is_auth', 'true');
             vault.style.display = 'block';
             vault.style.visibility = 'visible';
-            unlockUI();
-            startEntropyNoise();
-            resetIdleTimer();
-            logTerminal("V85_RECOVERY_MODE_ACTIVE");
+            logTerminal("V86_CORE_READY");
             runNetworkVerify();
+            resetIdleTimer();
         } 
+        else if (cmdRaw === "clear") {
+            clearTerminal();
+        }
         else if (cmdRaw === DURESS_PASS) {
             runPrivacyScrub();
             window.location.replace("https://www.reuters.com");
         }
         else {
-            logTerminal("AUTH_FAILED", "#ff3b30");
-            forceLock();
+            logTerminal("AUTH_ERROR", "#ff3b30");
         }
     }
 }
