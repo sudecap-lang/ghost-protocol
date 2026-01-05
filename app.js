@@ -15,7 +15,6 @@ function forceLock() {
         vault.style.display = 'none';
         vault.style.visibility = 'hidden';
         vault.style.opacity = "0";
-        vault.style.pointerEvents = 'none';
     }
     clearInterval(noiseInterval);
 }
@@ -27,62 +26,50 @@ function logTerminal(msg, color = "#00ffaa") {
 
 function clearTerminal() {
     output.innerHTML = "";
-    logTerminal("MEMORY_DUMP_SUCCESS", "#444");
+    logTerminal("TERMINAL_CLEAN", "#555");
 }
 
-// SIMULAÇÃO DE ANONIMATO POR SATURAÇÃO DE GEOLOCALIZAÇÃO
 async function runNetworkVerify() {
-    logTerminal("INITIALIZING_GHOST_PATH...", "#ff9500");
+    logTerminal("SCANNING_IP_EXPOSURE...", "#ff9500");
     try {
         const res = await fetch('https://api.ipify.org?format=json');
         const data = await res.json();
         if (data.ip === "179.191.223.163") {
-            logTerminal("LOCAL_IP_DETECTED: " + data.ip, "#ff3b30");
-            logTerminal("ACTION: STARTING_DILUTION_PROTOCOL...", "#ff9500");
-            startHighEntropyNoise(); // Inicia ruído pesado se o IP for o real
+            logTerminal("ALERT: IP_LOGGED_AS_" + data.ip, "#ff3b30");
+            logTerminal("LOC: CAMPOS_RJ (PROTECTION_REQUIRED)", "#ff3b30");
         } else {
-            logTerminal("SUCCESS: IP_MASKED_BY_EXTERNAL_LAYER", "#34c759");
+            logTerminal("SUCCESS: IP_MASKED_OK", "#34c759");
         }
     } catch (e) {
-        logTerminal("CHECK_FAILED: DNS_SPOOF_PROTECTION_ACTIVE", "#00ffaa");
+        logTerminal("CHECK_FAILED: NETWORK_LOCK_ACTIVE", "#00ffaa");
     }
 }
 
-// RUÍDO PESADO PARA "SUJAR" O PERFIL DO IP 179.191.223.163
 function startHighEntropyNoise() {
+    if (noiseInterval) clearInterval(noiseInterval);
     noiseInterval = setInterval(() => {
-        // Alvos em fusos horários e continentes diferentes
-        const globalNodes = [
-            "https://www.baidu.com", // Ásia
-            "https://www.yandex.ru", // Europa/Leste
-            "https://www.bbc.co.uk", // Europa/Oeste
-            "https://www.uol.com.br"  // América
-        ];
+        const globalNodes = ["https://www.baidu.com", "https://www.bbc.co.uk", "https://www.apple.com"];
         const target = globalNodes[Math.floor(Math.random() * globalNodes.length)];
-        
-        // Dispara requisição com "poisoning" de cache
-        fetch(`${target}/favicon.ico?entropy=${Math.random()}`, { 
-            mode: 'no-cors',
-            cache: 'no-store'
-        }).catch(()=>{});
-        
-    }, 3000); // Frequência aumentada para 3 segundos
+        fetch(`${target}/favicon.ico?v=${Math.random()}`, { mode: 'no-cors' }).catch(()=>{});
+    }, 4000); 
 }
 
+// RESET DE VISIBILIDADE - AUMENTADO PARA 15 SEGUNDOS
 function resetIdleTimer() {
     clearTimeout(idleTimer);
     if (vault && vault.style.display === 'block') {
+        // Remove qualquer desfoque ao interagir
         vault.style.filter = "none";
         vault.style.opacity = "1";
         vault.style.pointerEvents = 'auto';
+        
         idleTimer = setTimeout(() => {
-            vault.style.filter = "blur(140px) brightness(0)";
-            vault.style.pointerEvents = 'none';
-        }, 3000); 
+            // Aplica desfoque leve após 15s de inatividade
+            vault.style.filter = "blur(15px) brightness(0.2)";
+        }, 15000); 
     }
 }
 
-// PROTEÇÃO CONTRA ANÁLISE FÍSICA
 window.ondevicemotion = (event) => {
     let m = event.accelerationIncludingGravity;
     if (Math.abs(m.x) > 40 || Math.abs(m.y) > 40) {
@@ -94,13 +81,15 @@ document.addEventListener("visibilitychange", () => {
     if (document.hidden) {
         forceLock();
         localStorage.clear();
-        sessionStorage.clear();
     }
 });
 
+// EVENTOS PARA MANTER A TELA VISÍVEL ENQUANTO VOCÊ USA
 window.onload = () => {
     forceLock();
-    output.innerHTML = ""; 
+    output.innerHTML = "";
+    document.addEventListener('touchstart', resetIdleTimer, {passive: true});
+    document.addEventListener('click', resetIdleTimer);
 };
 
 // --- FUNÇÕES DE COMANDO ---
@@ -112,18 +101,18 @@ function openLogs() {
 function runPrivacyScrub() {
     localStorage.clear();
     sessionStorage.clear();
-    logTerminal("BROWSER_SIGNATURE_WIPED", "#00ff00");
+    logTerminal("BROWSER_WIPE_OK", "#00ff00");
 }
 
 function toggleStealth() {
     const s = document.body.style;
-    s.filter = s.filter.includes("brightness") ? "none" : "brightness(0) contrast(50) blur(30px)";
+    s.filter = s.filter.includes("brightness") ? "none" : "brightness(0.1) blur(10px)";
 }
 
 function emergencyWipe() {
     localStorage.clear();
     sessionStorage.clear();
-    window.location.replace("https://www.google.com/search?q=weather+campos+dos+goytacazes");
+    window.location.replace("https://www.reuters.com");
 }
 
 function checkCommand(event) {
@@ -138,11 +127,12 @@ function checkCommand(event) {
             vault.style.opacity = "1";
             vault.style.pointerEvents = 'auto';
             resetIdleTimer();
-            logTerminal("GHOST_PROTOCOL_V80_LOADED");
+            logTerminal("V81_STABLE_LOADED");
+            startHighEntropyNoise();
             runNetworkVerify();
         } 
         else if (cmdRaw === HONEYPOT_PASS) {
-            vault.innerHTML = "<div style='padding:20px; color:#000;'>[LOGS_DELETED_BY_TIMER]</div>";
+            vault.innerHTML = "<div style='padding:20px; color:#111;'>[DECOY_READY]</div>";
             vault.style.display = 'block';
             vault.style.visibility = 'visible';
             vault.style.opacity = "1";
@@ -151,7 +141,7 @@ function checkCommand(event) {
             emergencyWipe();
         }
         else {
-            logTerminal("UNAUTHORIZED", "#ff3b30");
+            logTerminal("DENIED", "#ff3b30");
             forceLock();
         }
     }
