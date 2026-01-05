@@ -1,6 +1,5 @@
 // --- BLACK CELL CONFIGURATION ---
 const REAL_PASS = "77 Abacate 77*"; 
-const DECOY_PASS = "1234"; // Senha falsa para emergências
 const NEXT_DNS_ID = "6ddbfb"; 
 // ---------------------------------
 
@@ -12,57 +11,55 @@ function logTerminal(msg, color = "#34c759") {
     output.scrollTop = output.scrollHeight;
 }
 
+// Verifica se o DNS está ativo ao carregar
+async function checkSecurityStatus() {
+    try {
+        const response = await fetch('https://test.nextdns.io');
+        const data = await response.json();
+        if (data.status === "ok") {
+            logTerminal("ENCRYPTION: ACTIVE (NEXTDNS)", "#00ff00");
+        } else {
+            logTerminal("WARNING: EXPOSED TO ISP NETWORK", "#ff3b30");
+        }
+    } catch (e) {
+        logTerminal("CHECK_FAILED: RE-INSTALL PROFILE", "#ff9500");
+    }
+}
+
 function checkCommand(event) {
     if (event.key === 'Enter') {
         const input = document.getElementById('command-input');
         const cmd = input.value;
         input.value = '';
 
-        // 1. Protocolo de Monitoramento
         if (cmd.toLowerCase() === "logs") {
-            logTerminal("> OPENING_ENCRYPTED_LOGS...", "#ff9500");
+            logTerminal("> OPENING_SURVEILLANCE_RECORDS...");
             window.open(`https://my.nextdns.io/${NEXT_DNS_ID}/logs`, '_blank');
-        } 
-        // 2. Senha Real (Cofre)
-        else if (cmd === REAL_PASS) {
-            logTerminal("> ACCESS_GRANTED: ENCRYPTED_VAULT_ACTIVE", "#00ff00");
+        } else if (cmd === REAL_PASS) {
+            logTerminal("> ACCESS_GRANTED: VAULT_OPEN");
             document.getElementById('secret-vault').style.display = 'block';
-        } 
-        // 3. Senha Isca (Enganar Observadores)
-        else if (cmd === DECOY_PASS) {
-            logTerminal("> LOADING_SYSTEM_REPORTS...", "#34c759");
-            window.location.replace("https://www.bbc.com/news"); // Abre notícias reais
-        }
-        else {
-            logTerminal("> AUTH_FAILURE: TRACE_LOGGED", "#ff3b30");
+        } else {
+            logTerminal("> AUTH_FAILURE: INVALID_KEY", "#ff3b30");
         }
     }
 }
 
 function runPrivacyScrub() {
-    logTerminal("> INITIATING_DEEP_CLEAN...");
-    // Apaga absolutamente tudo da sessão
+    logTerminal("> SCRUBBING_RAM...");
     localStorage.clear();
     sessionStorage.clear();
-    // Injeta endereços falsos no histórico do navegador
-    for(let i=0; i<5; i++) {
-        window.history.pushState({}, '', `?secure_node=${Math.random().toString(36).substring(7)}`);
-    }
-    logTerminal("> SCRUB_COMPLETE. NO_RESIDUAL_TRACE.");
+    logTerminal("> CLEAN_COMPLETE.");
 }
 
 function toggleStealth() {
-    logTerminal("> VISUAL_CLOAKING_ACTIVE.");
-    // Torna a tela quase impossível de ler por quem está ao lado
-    document.body.style.filter = "contrast(1.5) brightness(0.2) grayscale(1) blur(1px)";
+    logTerminal("> CLOAKING_ACTIVE.");
+    document.body.style.filter = "brightness(0.2) grayscale(1)";
 }
 
 function emergencyWipe() {
-    logTerminal("> CRITICAL: WIPING_ALL_NODES...");
     localStorage.clear();
-    // Redireciona de forma que o botão "voltar" não funcione
-    window.location.replace("https://www.google.com/search?q=weather+today");
+    window.location.replace("https://www.reuters.com");
 }
 
-logTerminal("> BLACK_CELL_OS_v8.0_ACTIVE");
-logTerminal("> TARGET_ID_LINKED: 6DDBFB");
+logTerminal("> SYSTEM_INIT: TARGET_ID 6DDBFB");
+checkSecurityStatus();
