@@ -1,28 +1,28 @@
 // --- BLACK CELL CONFIGURATION ---
-const REAL_PASS = "77 Abacate 77*"; 
+const SECRET_PASS = "77 Abacate 77*"; 
 const NEXT_DNS_ID = "6ddbfb"; 
 // ---------------------------------
 
-const output = document.getElementById('terminal-output');
+const terminal = document.getElementById('terminal-output');
 
-function logTerminal(msg, color = "#34c759") {
+function logTerminal(msg, color = "#00ffaa") {
     const time = new Date().toLocaleTimeString();
-    output.innerHTML += `<br><span style="color:${color}">[${time}] ${msg}</span>`;
-    output.scrollTop = output.scrollHeight;
+    terminal.innerHTML += `<br><span style="color:${color}">[${time}] > ${msg}</span>`;
+    terminal.scrollTop = terminal.scrollHeight;
 }
 
-// Verifica se o DNS está ativo ao carregar
-async function checkSecurityStatus() {
+// Verifica se o túnel 6ddbfb está ativo e limpo
+async function verifyShield() {
     try {
-        const response = await fetch('https://test.nextdns.io');
-        const data = await response.json();
-        if (data.status === "ok") {
-            logTerminal("ENCRYPTION: ACTIVE (NEXTDNS)", "#00ff00");
+        const check = await fetch('https://test.nextdns.io');
+        const status = await check.json();
+        if (status.status === "ok" && status.configuration === NEXT_DNS_ID) {
+            logTerminal("SHIELD_STATUS: 6DDBFB_ACTIVE_AND_CLEAN", "#34c759");
         } else {
-            logTerminal("WARNING: EXPOSED TO ISP NETWORK", "#ff3b30");
+            logTerminal("WARNING: MULTIPLE_PROFILES_DETECTED_OR_EXPOSED", "#ff3b30");
         }
     } catch (e) {
-        logTerminal("CHECK_FAILED: RE-INSTALL PROFILE", "#ff9500");
+        logTerminal("SHIELD_STATUS: OFFLINE", "#ff9500");
     }
 }
 
@@ -33,33 +33,29 @@ function checkCommand(event) {
         input.value = '';
 
         if (cmd.toLowerCase() === "logs") {
-            logTerminal("> OPENING_SURVEILLANCE_RECORDS...");
+            logTerminal("ACESSANDO REGISTROS...", "#ff9500");
             window.open(`https://my.nextdns.io/${NEXT_DNS_ID}/logs`, '_blank');
-        } else if (cmd === REAL_PASS) {
-            logTerminal("> ACCESS_GRANTED: VAULT_OPEN");
+        } else if (cmd === SECRET_PASS) {
+            logTerminal("VAULT_OPENED", "#00ff00");
             document.getElementById('secret-vault').style.display = 'block';
+        } else if (cmd.toLowerCase() === "verify") {
+            verifyShield();
         } else {
-            logTerminal("> AUTH_FAILURE: INVALID_KEY", "#ff3b30");
+            logTerminal("AUTH_ERROR", "#ff3b30");
         }
     }
 }
 
 function runPrivacyScrub() {
-    logTerminal("> SCRUBBING_RAM...");
     localStorage.clear();
     sessionStorage.clear();
-    logTerminal("> CLEAN_COMPLETE.");
+    logTerminal("SESSÃO_LIMPA.");
 }
 
 function toggleStealth() {
-    logTerminal("> CLOAKING_ACTIVE.");
-    document.body.style.filter = "brightness(0.2) grayscale(1)";
+    document.body.style.filter = "brightness(0.3) grayscale(1)";
+    logTerminal("MODO_GHOST_ATIVO.");
 }
 
-function emergencyWipe() {
-    localStorage.clear();
-    window.location.replace("https://www.reuters.com");
-}
-
-logTerminal("> SYSTEM_INIT: TARGET_ID 6DDBFB");
-checkSecurityStatus();
+logTerminal("GHOST_OS v9.8 ONLINE");
+verifyShield();
