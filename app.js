@@ -27,30 +27,46 @@ function logTerminal(msg, color = "#00ffaa") {
 
 function clearTerminal() {
     output.innerHTML = "";
-    logTerminal("UI_REFRESHED", "#444");
+    logTerminal("MEMORY_DUMP_SUCCESS", "#444");
 }
 
-// VERIFICA SE A LOCALIZAÇÃO AINDA ESTÁ EXPOSTA
+// SIMULAÇÃO DE ANONIMATO POR SATURAÇÃO DE GEOLOCALIZAÇÃO
 async function runNetworkVerify() {
+    logTerminal("INITIALIZING_GHOST_PATH...", "#ff9500");
     try {
         const res = await fetch('https://api.ipify.org?format=json');
         const data = await res.json();
         if (data.ip === "179.191.223.163") {
-            logTerminal("CRITICAL: IP_EXPOSED (179.191.223.163)", "#ff3b30");
-            logTerminal("LOC: CAMPOS_GOYTACAZES_RJ", "#ff3b30");
+            logTerminal("LOCAL_IP_DETECTED: " + data.ip, "#ff3b30");
+            logTerminal("ACTION: STARTING_DILUTION_PROTOCOL...", "#ff9500");
+            startHighEntropyNoise(); // Inicia ruído pesado se o IP for o real
         } else {
-            logTerminal("SUCCESS: IP_MASKED", "#34c759");
+            logTerminal("SUCCESS: IP_MASKED_BY_EXTERNAL_LAYER", "#34c759");
         }
     } catch (e) {
-        logTerminal("VERIFICATION_BLOCKED_BY_DNS", "#ff9500");
+        logTerminal("CHECK_FAILED: DNS_SPOOF_PROTECTION_ACTIVE", "#00ffaa");
     }
 }
 
-function startEntropyNoise() {
+// RUÍDO PESADO PARA "SUJAR" O PERFIL DO IP 179.191.223.163
+function startHighEntropyNoise() {
     noiseInterval = setInterval(() => {
-        const decoys = ["https://www.apple.com", "https://www.wikipedia.org"];
-        fetch(`${decoys[Math.floor(Math.random()*decoys.length)]}/?v=${Math.random()}`, { mode: 'no-cors' }).catch(()=>{});
-    }, 5000); 
+        // Alvos em fusos horários e continentes diferentes
+        const globalNodes = [
+            "https://www.baidu.com", // Ásia
+            "https://www.yandex.ru", // Europa/Leste
+            "https://www.bbc.co.uk", // Europa/Oeste
+            "https://www.uol.com.br"  // América
+        ];
+        const target = globalNodes[Math.floor(Math.random() * globalNodes.length)];
+        
+        // Dispara requisição com "poisoning" de cache
+        fetch(`${target}/favicon.ico?entropy=${Math.random()}`, { 
+            mode: 'no-cors',
+            cache: 'no-store'
+        }).catch(()=>{});
+        
+    }, 3000); // Frequência aumentada para 3 segundos
 }
 
 function resetIdleTimer() {
@@ -58,14 +74,15 @@ function resetIdleTimer() {
     if (vault && vault.style.display === 'block') {
         vault.style.filter = "none";
         vault.style.opacity = "1";
-        vault.style.pointerEvents = 'auto'; // Garante que os botões funcionem ao interagir
+        vault.style.pointerEvents = 'auto';
         idleTimer = setTimeout(() => {
-            vault.style.filter = "blur(130px) brightness(0.01)";
-            vault.style.pointerEvents = 'none'; // Bloqueia toques quando invisível
-        }, 3500); 
+            vault.style.filter = "blur(140px) brightness(0)";
+            vault.style.pointerEvents = 'none';
+        }, 3000); 
     }
 }
 
+// PROTEÇÃO CONTRA ANÁLISE FÍSICA
 window.ondevicemotion = (event) => {
     let m = event.accelerationIncludingGravity;
     if (Math.abs(m.x) > 40 || Math.abs(m.y) > 40) {
@@ -84,7 +101,6 @@ document.addEventListener("visibilitychange", () => {
 window.onload = () => {
     forceLock();
     output.innerHTML = ""; 
-    document.addEventListener('touchstart', resetIdleTimer, {passive: true});
 };
 
 // --- FUNÇÕES DE COMANDO ---
@@ -96,18 +112,18 @@ function openLogs() {
 function runPrivacyScrub() {
     localStorage.clear();
     sessionStorage.clear();
-    logTerminal("METADATA_CLEANED", "#00ff00");
+    logTerminal("BROWSER_SIGNATURE_WIPED", "#00ff00");
 }
 
 function toggleStealth() {
     const s = document.body.style;
-    s.filter = s.filter.includes("brightness") ? "none" : "brightness(0.01) contrast(40) blur(20px)";
+    s.filter = s.filter.includes("brightness") ? "none" : "brightness(0) contrast(50) blur(30px)";
 }
 
 function emergencyWipe() {
     localStorage.clear();
     sessionStorage.clear();
-    window.location.replace("https://www.reuters.com");
+    window.location.replace("https://www.google.com/search?q=weather+campos+dos+goytacazes");
 }
 
 function checkCommand(event) {
@@ -121,13 +137,12 @@ function checkCommand(event) {
             vault.style.visibility = 'visible';
             vault.style.opacity = "1";
             vault.style.pointerEvents = 'auto';
-            startEntropyNoise();
             resetIdleTimer();
-            logTerminal("SYSTEM_UNLOCKED");
+            logTerminal("GHOST_PROTOCOL_V80_LOADED");
             runNetworkVerify();
         } 
         else if (cmdRaw === HONEYPOT_PASS) {
-            vault.innerHTML = "<div style='padding:20px; color:#111;'>LOG_STORAGE_DISABLED</div>";
+            vault.innerHTML = "<div style='padding:20px; color:#000;'>[LOGS_DELETED_BY_TIMER]</div>";
             vault.style.display = 'block';
             vault.style.visibility = 'visible';
             vault.style.opacity = "1";
@@ -136,7 +151,7 @@ function checkCommand(event) {
             emergencyWipe();
         }
         else {
-            logTerminal("AUTH_FAILED", "#ff3b30");
+            logTerminal("UNAUTHORIZED", "#ff3b30");
             forceLock();
         }
     }
