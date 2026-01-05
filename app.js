@@ -6,12 +6,11 @@ const NEXT_DNS_ID = "6ddbfb";
 const output = document.getElementById('terminal-output');
 const vault = document.getElementById('secret-vault');
 
-// ESTADO INICIAL SEGURO
+// GARANTIR QUE NADA ESTEJA OCULTANDO A TELA INDEVIDAMENTE
+document.body.style.filter = "none";
 if (vault) {
     vault.style.display = 'none';
-    vault.style.visibility = 'hidden';
 }
-document.body.style.filter = "none";
 
 function logTerminal(msg, color = "#00ffaa") {
     const time = new Date().toLocaleTimeString();
@@ -19,35 +18,34 @@ function logTerminal(msg, color = "#00ffaa") {
     output.scrollTop = output.scrollHeight;
 }
 
-// Função de Diagnóstico com Resiliência
+// Função de Diagnóstico Ultra-Resiliente
 async function runNetworkVerify() {
-    logTerminal("TENTANDO CONEXÃO COM O SERVIDOR DE TESTE...", "#00aaff");
+    logTerminal("SOLICITANDO PING DE SEGURANÇA...", "#00aaff");
     try {
-        // Uso de 'no-cors' ou modo flexível para evitar bloqueios de segurança do navegador
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 segundos de limite
-
-        const res = await fetch(`https://test.nextdns.io/?t=${Date.now()}`, { signal: controller.signal });
-        const data = await res.json();
+        // Tentativa de conexão com bypass de cache e timeout estendido
+        const response = await fetch(`https://test.nextdns.io/?t=${Date.now()}`, {
+            mode: 'cors',
+            cache: 'no-store'
+        });
         
-        clearTimeout(timeoutId);
+        const data = await response.json();
 
         if (data.status === "ok" && data.configuration === NEXT_DNS_ID) {
-            logTerminal("RESULTADO: ESCUDO VERDE (SISTEMA INTEGRAL)", "#34c759");
+            logTerminal("SHIELD: VERDE (PERFIL 6DDBFB ATIVO)", "#34c759");
         } else if (data.status === "ok") {
-            logTerminal("RESULTADO: ESCUDO LARANJA (PERFIL DESALINHADO)", "#ff9500");
+            logTerminal("SHIELD: LARANJA (IP RECONHECIDO, PERFIL INATIVO)", "#ff9500");
         } else {
-            logTerminal("RESULTADO: ESCUDO VERMELHO (REDE EXPOSTA)", "#ff3b30");
+            logTerminal("SHIELD: VERMELHO (REDE EXPOSTA)", "#ff3b30");
         }
     } catch (e) {
-        logTerminal("ERRO: SERVIDOR NÃO RESPONDE. VERIFIQUE SE O 'RELÉ PRIVADO' DO ICLOUD ESTÁ ATIVO.", "#ff3b30");
-        logTerminal("DICA: ATIVE E DESATIVE O MODO AVIÃO PARA REINICIAR A REDE.", "#00aaff");
+        logTerminal("ERRO: O IPHONE BLOQUEOU A REQUISIÇÃO.", "#ff3b30");
+        logTerminal("AÇÃO: DESATIVE 'LIMITAR RASTREIO DE IP' NAS CONFIGURAÇÕES DE WI-FI.", "#ff9500");
     }
 }
 
 window.onload = () => {
-    logTerminal("GHOST_OS v20.0 ONLINE");
-    logTerminal("SISTEMA PRONTO.");
+    logTerminal("GHOST_OS v21.0 ONLINE");
+    logTerminal("SISTEMA PRONTO PARA COMANDOS.");
 };
 
 function checkCommand(event) {
@@ -57,7 +55,7 @@ function checkCommand(event) {
         const cmdClean = cmdRaw.toLowerCase().trim();
         input.value = '';
 
-        // 1. PRIORIDADE TOTAL: COMANDOS
+        // PRIORIDADE 1: COMANDOS
         if (cmdClean === "verify") {
             runNetworkVerify();
         } 
@@ -68,35 +66,35 @@ function checkCommand(event) {
             output.innerHTML = "";
             logTerminal("TERMINAL REINICIADO.");
         }
-        // 2. VALIDAÇÃO DE SENHA
+        // PRIORIDADE 2: SENHA MESTRE
         else if (cmdRaw === SECRET_PASS) {
-            logTerminal("ACESSO CONCEDIDO.", "#00ff00");
+            logTerminal("CHAVE ACEITA. DESBLOQUEANDO COFRE...", "#00ff00");
             if (vault) {
                 vault.style.display = 'block';
-                vault.style.visibility = 'visible';
                 vault.style.opacity = '1';
+                vault.style.visibility = 'visible';
             }
         } 
         else {
-            logTerminal(`SISTEMA: COMANDO '${cmdRaw}' INVÁLIDO`, "#ff3b30");
+            logTerminal(`SISTEMA: ENTRADA '${cmdRaw}' INVÁLIDA`, "#ff3b30");
         }
     }
 }
 
 function runPrivacyScrub() {
-    logTerminal("LIMPANDO RASTROS...");
+    logTerminal("DESTRUINDO EVIDÊNCIAS...");
     localStorage.clear();
     sessionStorage.clear();
-    logTerminal("LIMPEZA_OK.");
+    logTerminal("LIMPEZA_CONCLUÍDA.");
 }
 
 function toggleStealth() {
     if (document.body.style.filter.includes("brightness")) {
         document.body.style.filter = "none";
-        logTerminal("MODO_STEALTH: OFF");
+        logTerminal("MODO GHOST: OFF");
     } else {
-        document.body.style.filter = "brightness(0.6) contrast(1.2)";
-        logTerminal("MODO_STEALTH: ON");
+        document.body.style.filter = "brightness(0.7) contrast(1.1)";
+        logTerminal("MODO GHOST: ON");
     }
 }
 
