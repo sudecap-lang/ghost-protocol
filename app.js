@@ -23,14 +23,13 @@ function logTerminal(msg, color = "#00ffaa") {
     output.scrollTop = output.scrollHeight;
 }
 
-// GERA RUÍDO PARA CAMUFLAR OS LOGS DA META QUE VOCÊ VIU
+// GERA RUÍDO PARA CAMUFLAR O USO DE APPS COMO INTELBRAS E WHATSAPP
 function startTrafficNoise() {
-    logTerminal("TRAFFIC_DECEPTION: ACTIVE", "#00aaff");
+    logTerminal("DECEPTION_MODULE: MULTI_APP_NOISE_ON", "#00aaff");
     noiseInterval = setInterval(() => {
-        // Alvos neutros para confundir análise de padrão de tráfego
-        fetch(`https://www.google.com/favicon.ico?v=${Math.random()}`, { mode: 'no-cors' });
-        fetch(`https://www.apple.com/favicon.ico?v=${Math.random()}`, { mode: 'no-cors' });
-    }, 4500); 
+        // Simula tráfego genérico para esconder os picos de outros apps
+        fetch(`https://www.apple.com/library/test/success.html?t=${Math.random()}`, { mode: 'no-cors' });
+    }, 4000); 
 }
 
 function resetIdleTimer() {
@@ -38,13 +37,13 @@ function resetIdleTimer() {
     if (vault && vault.style.display === 'block') {
         vault.style.filter = "none";
         idleTimer = setTimeout(() => {
-            vault.style.filter = "blur(25px) brightness(0.3)";
-            logTerminal("AUTO_SHIELD: PRIVACY_BLUR_ON", "#ff9500");
-        }, 15000); 
+            vault.style.filter = "blur(35px) brightness(0.2) grayscale(1)";
+            logTerminal("SHIELD: MAX_PRIVACY_BLUR", "#ff9500");
+        }, 10000); // 10 segundos para proteção máxima
     }
 }
 
-// PROTEÇÃO CONTRA TOMADA FÍSICA
+// WIPE POR MOVIMENTO (PROTEÇÃO CONTRA TOMADA DO IPHONE)
 window.ondevicemotion = (event) => {
     let acc = event.accelerationIncludingGravity;
     if (Math.abs(acc.x) > 25 || Math.abs(acc.y) > 25) {
@@ -54,48 +53,43 @@ window.ondevicemotion = (event) => {
 
 window.onload = () => {
     forceLock();
-    logTerminal("GHOST_OS v52.0 - MONITORING_STATUS_STABLE");
+    logTerminal("GHOST_OS v54.0 - SYSTEM_WIDE_MONITORING_ACTIVE");
     document.addEventListener('touchstart', resetIdleTimer);
 };
 
-// --- FUNÇÕES DE COMANDO ---
+// --- FUNÇÕES OPERACIONAIS ---
 
 async function runNetworkVerify() {
-    logTerminal("VERIFYING_ENCRYPTION_LAYERS...", "#00aaff");
+    logTerminal("SCANNING_NETWORK_INTEGRITY...", "#00aaff");
     try {
         await fetch(`https://test.nextdns.io/?t=${Date.now()}`, { mode: 'no-cors' });
-        logTerminal("ANONYMITY: ACTIVE_FILTERING", "#34c759");
+        logTerminal("STATUS: ENCRYPTED_DNS_ACTIVE", "#34c759");
+        logTerminal("ALERT: PUBLIC_IP_EXPOSED", "#ff3b30");
     } catch (e) {
-        logTerminal("ANONYMITY: FILTER_BYPASS_DETECTED", "#ff3b30");
+        logTerminal("STATUS: FULL_STEALTH_MODE", "#34c759");
     }
 }
 
 function openLogs() {
-    logTerminal("ACCESSING_REMOTE_REGISTROS...");
-    window.open(`https://my.nextdns.io/${NEXT_DNS_ID}/logs`, '_blank');
-}
-
-function clearTerminal() {
-    output.innerHTML = "";
-    logTerminal("TERMINAL_CLEARED.");
+    logTerminal("OPENING_REMOTE_LOG_STREAM...");
+    window.open(`https://my.nextdns.io/${NEXT_DNS_ID}/registros`, '_blank');
 }
 
 function runPrivacyScrub() {
     localStorage.clear();
     sessionStorage.clear();
-    logTerminal("SESSION_DATA_DESTROYED", "#00ff00");
+    logTerminal("CACHE_PURGED: OK", "#00ff00");
 }
 
 function toggleStealth() {
     document.body.style.filter = document.body.style.filter.includes("brightness") ? 
-        "none" : "brightness(0.15) contrast(2) grayscale(1)";
-    logTerminal("STEALTH_MODE_UPDATED");
+        "none" : "brightness(0.1) contrast(3) grayscale(1) blur(0.5px)";
+    logTerminal("STEALTH_LAYER_ACTIVE");
 }
 
 function emergencyWipe() {
     localStorage.clear();
-    sessionStorage.clear();
-    logTerminal("PROTOCOL_RED: FULL_WIPE", "#ff3b30");
+    logTerminal("SUDO_WIPE_INITIATED", "#ff3b30");
     window.location.replace("https://www.reuters.com");
 }
 
@@ -106,7 +100,7 @@ function checkCommand(event) {
         input.value = '';
 
         if (cmdRaw === SECRET_PASS) {
-            logTerminal("AUTH_SUCCESS: SYSTEM_OPEN", "#00ff00");
+            logTerminal("AUTH: ACCESS_GRANTED", "#00ff00");
             if (vault) {
                 vault.style.display = 'block';
                 vault.style.visibility = 'visible';
@@ -115,16 +109,16 @@ function checkCommand(event) {
             }
         } 
         else if (cmdRaw === DURESS_PASS) {
-            logTerminal("AUTH_SUCCESS: DECOY_LOADED", "#00ff00");
+            logTerminal("AUTH: DECOY_SESSION_START", "#00ff00");
             runPrivacyScrub();
             if (vault) {
-                vault.innerHTML = "<div style='padding:20px; color:#333;'>Logs: empty. Cache: empty.</div>";
+                vault.innerHTML = "<div style='padding:20px; color:#222;'>No logs recorded. System at 100% health.</div>";
                 vault.style.display = 'block';
                 vault.style.visibility = 'visible';
             }
         }
         else {
-            logTerminal("AUTH_FAILED: RE-LOCKING", "#ff3b30");
+            logTerminal("AUTH: UNAUTHORIZED_LOCKED", "#ff3b30");
             forceLock();
         }
     }
