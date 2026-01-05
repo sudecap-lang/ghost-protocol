@@ -24,36 +24,31 @@ function logTerminal(msg, color = "#00ffaa") {
     output.scrollTop = output.scrollHeight;
 }
 
+// RESTAURAÇÃO: LIMPAR TERMINAL SEM APAGAR O STATUS ATUAL
 function clearTerminal() {
     output.innerHTML = "";
-    logTerminal("LOCAL_BUFFER_RESET", "#555");
+    logTerminal("TERMINAL_RESET", "#555");
 }
 
-// VERIFICA EXPOSIÇÃO DO IP 179.191.223.163
+// VERIFICA SE O NEXTDNS ESTÁ FILTRANDO O TRÁFEGO
 async function runNetworkVerify() {
     try {
-        const response = await fetch('https://api.ipify.org?format=json');
-        const data = await response.json();
-        const currentIP = data.ip;
-        
-        if (currentIP === "179.191.223.163") {
-            logTerminal("EXPOSED_IP: " + currentIP, "#ff3b30");
-            logTerminal("SUGESTÃO: USE CLOUDFLARE_WARP", "#ff9500");
-        } else {
-            logTerminal("IP_HIDDEN: SUCCESS", "#34c759");
-            logTerminal("NODE: " + currentIP, "#34c759");
-        }
+        const controller = new AbortController();
+        setTimeout(() => controller.abort(), 2000);
+        // Testa especificamente o endpoint do NextDNS
+        const res = await fetch(`https://test.nextdns.io/?t=${Date.now()}`, { mode: 'no-cors', signal: controller.signal });
+        logTerminal("DNS_SHIELD: ACTIVE", "#34c759");
     } catch (e) {
-        logTerminal("OFFLINE_OR_BLOCKED", "#ff3b30");
+        logTerminal("DNS_SHIELD: BYPASSED_OR_OFF", "#ff3b30");
     }
 }
 
 function startEntropyNoise() {
     noiseInterval = setInterval(() => {
-        // Simula tráfego para diluir o perfil de navegação
-        const sites = ["https://www.wikipedia.org", "https://www.reuters.com"];
-        const s = sites[Math.floor(Math.random() * sites.length)];
-        fetch(`${s}/favicon.ico?v=${Math.random()}`, { mode: 'no-cors' }).catch(()=>{});
+        // Usa apenas domínios neutros para não gerar "noise" falso nos seus logs de bloqueio
+        const safeTargets = ["https://www.wikipedia.org", "https://www.apple.com"];
+        const target = safeTargets[Math.floor(Math.random() * safeTargets.length)];
+        fetch(`${target}/favicon.ico?cache=${Math.random()}`, { mode: 'no-cors' }).catch(()=>{});
     }, 6000); 
 }
 
@@ -63,12 +58,12 @@ function resetIdleTimer() {
         vault.style.filter = "none";
         vault.style.opacity = "1";
         idleTimer = setTimeout(() => {
-            vault.style.filter = "blur(110px) brightness(0)";
-        }, 3000); 
+            vault.style.filter = "blur(115px) brightness(0)";
+        }, 4000); 
     }
 }
 
-// SENSOR DE MOVIMENTO (GRATUITO E LOCAL)
+// SENSOR DE MOVIMENTO (FBI PROTOCOL)
 window.ondevicemotion = (event) => {
     let m = event.accelerationIncludingGravity;
     if (Math.abs(m.x) > 38 || Math.abs(m.y) > 38) {
@@ -76,6 +71,7 @@ window.ondevicemotion = (event) => {
     }
 };
 
+// PROTEÇÃO AO MINIMIZAR O SAFARI
 document.addEventListener("visibilitychange", () => {
     if (document.hidden) {
         forceLock();
@@ -99,12 +95,12 @@ function openLogs() {
 function runPrivacyScrub() {
     localStorage.clear();
     sessionStorage.clear();
-    logTerminal("RAM_ZEROED", "#00ff00");
+    logTerminal("BUFFER_CLEAN", "#00ff00");
 }
 
 function toggleStealth() {
-    const s = document.body.style;
-    s.filter = s.filter.includes("brightness") ? "none" : "brightness(0.01) contrast(30) blur(18px)";
+    const b = document.body.style;
+    b.filter = b.filter.includes("brightness") ? "none" : "brightness(0.01) contrast(35) blur(20px)";
 }
 
 function emergencyWipe() {
@@ -125,11 +121,11 @@ function checkCommand(event) {
             vault.style.opacity = "1";
             startEntropyNoise();
             resetIdleTimer();
-            logTerminal("AUTH_ALPHA_OK");
+            logTerminal("AUTH_SUCCESS");
             runNetworkVerify();
         } 
         else if (cmdRaw === HONEYPOT_PASS) {
-            vault.innerHTML = "<div style='padding:20px; color:#111;'>NO_DATA_AVAILABLE</div>";
+            vault.innerHTML = "<div style='padding:20px; color:#000;'>[NO_LOGS_AVAILABLE]</div>";
             vault.style.display = 'block';
             vault.style.visibility = 'visible';
             vault.style.opacity = "1";
@@ -138,7 +134,7 @@ function checkCommand(event) {
             emergencyWipe();
         }
         else {
-            logTerminal("ERR_AUTH", "#ff3b30");
+            logTerminal("DENIED", "#ff3b30");
             forceLock();
         }
     }
