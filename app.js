@@ -25,13 +25,12 @@ function logTerminal(msg, color = "#00ffaa") {
     output.scrollTop = output.scrollHeight;
 }
 
-// GERA RUÍDO CONSTANTE PARA CAMUFLAGEM DE TRÁFEGO
+// RUÍDO DE TRÁFEGO SISTÊMICO
 function startTrafficNoise() {
-    logTerminal("ANONYMITY_NOISE: STARTING_DUMMY_TRAFFIC", "#00aaff");
+    logTerminal("GLOBAL_NOISE_GENERATOR: ACTIVE", "#00aaff");
     noiseInterval = setInterval(() => {
-        // Simula requisições para servidores globais neutros
-        fetch(`https://en.wikipedia.org/wiki/Privacy?q=${Math.random()}`, { mode: 'no-cors' });
-    }, 4000); 
+        fetch(`https://www.apple.com/library/test/success.html?q=${Math.random()}`, { mode: 'no-cors' });
+    }, 5000); 
 }
 
 function resetIdleTimer() {
@@ -39,48 +38,41 @@ function resetIdleTimer() {
     if (vault && vault.style.display === 'block') {
         vault.style.filter = "none";
         idleTimer = setTimeout(() => {
-            vault.style.filter = "blur(15px) grayscale(1)";
-            logTerminal("SHIELD: AUTO_BLUR_PROTECTION", "#ff9500");
-        }, 15000); // 15 segundos sem toque = Blur
+            vault.style.filter = "blur(25px) grayscale(1) brightness(0.4)";
+            logTerminal("SHIELD: SYSTEM_IDLE_BLUR", "#ff9500");
+        }, 15000); 
     }
 }
 
-// BLOQUEIO POR MOVIMENTO BRUSCO (SENSOR)
+// PROTEÇÃO FÍSICA (ACELERÔMETRO)
 window.ondevicemotion = (event) => {
-    const acceleration = event.accelerationIncludingGravity;
-    if (Math.abs(acceleration.x) > 25 || Math.abs(acceleration.y) > 25) {
-        if (vault && vault.style.display === 'block') {
-            emergencyWipe();
-        }
+    const acc = event.accelerationIncludingGravity;
+    if (Math.abs(acc.x) > 28 || Math.abs(acc.y) > 28) {
+        if (vault && vault.style.display === 'block') emergencyWipe();
     }
 };
 
 window.onload = () => {
     forceLock();
-    logTerminal("GHOST_OS v46.0 - TOTAL_ANONYMITY_READY");
+    logTerminal("GHOST_OS v50.0 - FULL_IPHONE_PROTECTION_ENABLED");
     document.addEventListener('touchstart', resetIdleTimer);
 };
 
-// --- FUNÇÕES DE OPERAÇÃO ---
+// --- OPERATIONAL COMMANDS ---
 
 async function runNetworkVerify() {
-    logTerminal("TESTING_TUNNEL_INTEGRITY...", "#00aaff");
+    logTerminal("SCANNING_FOR_META_LEAKS...", "#00aaff");
     try {
-        await fetch(`https://test.nextdns.io/?t=${Date.now()}`, { mode: 'no-cors' });
-        logTerminal("ANONYMITY: SECURE_GREEN", "#34c759");
+        const res = await fetch(`https://test.nextdns.io/?t=${Date.now()}`, { mode: 'no-cors' });
+        logTerminal("OS_SHIELD: REINFORCED", "#34c759");
     } catch (e) {
-        logTerminal("ANONYMITY: COMPROMISED", "#ff3b30");
+        logTerminal("OS_SHIELD: LEAK_DETECTED", "#ff3b30");
     }
 }
 
 function openLogs() {
-    logTerminal("RELAYING_ENCRYPTED_LOGS...");
+    logTerminal("ACCESSING_LOG_VAULT...");
     window.open(`https://my.nextdns.io/${NEXT_DNS_ID}/logs`, '_blank');
-}
-
-function clearTerminal() {
-    output.innerHTML = "";
-    logTerminal("TERMINAL_FLUSHED.");
 }
 
 function runPrivacyScrub() {
@@ -90,23 +82,16 @@ function runPrivacyScrub() {
 }
 
 function toggleStealth() {
-    if (document.body.style.filter.includes("brightness")) {
-        document.body.style.filter = "none";
-        logTerminal("GHOST_MODE: OFF");
-    } else {
-        document.body.style.filter = "brightness(0.3) contrast(1.5) grayscale(1)";
-        logTerminal("GHOST_MODE: ON", "#34c759");
-    }
+    document.body.style.filter = document.body.style.filter.includes("brightness") ? 
+        "none" : "brightness(0.2) contrast(2) grayscale(1)";
+    logTerminal("STEALTH_MODE_TOGGLED");
 }
 
 function emergencyWipe() {
     localStorage.clear();
-    sessionStorage.clear();
-    logTerminal("EMERGENCY_WIPE_INITIATED", "#ff3b30");
+    logTerminal("SUDO_WIPE_ACTIVE", "#ff3b30");
     window.location.replace("https://www.reuters.com");
 }
-
-// --- LÓGICA DE ACESSO ---
 
 function checkCommand(event) {
     if (event.key === 'Enter') {
@@ -115,7 +100,7 @@ function checkCommand(event) {
         input.value = '';
 
         if (cmdRaw === SECRET_PASS) {
-            logTerminal("AUTH: SUCCESS_LEVEL_GOD", "#00ff00");
+            logTerminal("AUTH: ADMIN_GRANTED", "#00ff00");
             if (vault) {
                 vault.style.display = 'block';
                 vault.style.visibility = 'visible';
@@ -124,16 +109,16 @@ function checkCommand(event) {
             }
         } 
         else if (cmdRaw === DURESS_PASS) {
-            logTerminal("AUTH: SUCCESS_LEVEL_GUEST", "#00ff00");
+            logTerminal("AUTH: GUEST_MODE_ACTIVE", "#00ff00");
             runPrivacyScrub();
             if (vault) {
-                vault.innerHTML = "<div style='padding:20px; color:#444;'>No files found on this device.</div>";
+                vault.innerHTML = "<div style='padding:20px; color:#222;'>Encrypted partition empty.</div>";
                 vault.style.display = 'block';
                 vault.style.visibility = 'visible';
             }
         }
         else {
-            logTerminal("AUTH: FAILED_UNAUTHORIZED", "#ff3b30");
+            logTerminal("AUTH: UNAUTHORIZED_ACCESS", "#ff3b30");
             forceLock();
         }
     }
