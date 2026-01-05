@@ -21,18 +21,16 @@ function logTerminal(msg, color = "#00ffaa") {
 
 window.onload = () => {
     forceLock();
-    logTerminal("SISTEMA GHOST v34.0 - IP ANALYSER");
-    logTerminal("NOTA: DNS ATIVO OCULTA DADOS, NÃO O IP FÍSICO.");
+    logTerminal("GHOST_OS v36.0 ONLINE");
 };
 
 async function runNetworkVerify() {
-    logTerminal("SOLICITANDO DIAGNÓSTICO DE PRIVACIDADE...", "#00aaff");
+    logTerminal("VERIFYING NETWORK TUNNEL...", "#00aaff");
     try {
         const res = await fetch(`https://test.nextdns.io/?t=${Date.now()}`, { mode: 'no-cors' });
-        logTerminal("SHIELD: VERDE (CONTEÚDO PROTEGIDO)", "#34c759");
-        logTerminal("ALERTA: SEU IP É VISÍVEL PELA OPERADORA GIGA MAIS.", "#ff9500");
+        logTerminal("SHIELD: GREEN", "#34c759");
     } catch (e) {
-        logTerminal("ERRO NA SONDAGEM DE REDE.", "#ff3b30");
+        logTerminal("SHIELD: ERROR", "#ff3b30");
     }
 }
 
@@ -47,22 +45,21 @@ function checkCommand(event) {
             runNetworkVerify();
         } 
         else if (cmdClean === "logs") {
-            logTerminal("REQUISITANDO LOGS DE PRIVACIDADE...");
             window.open(`https://my.nextdns.io/${NEXT_DNS_ID}/logs`, '_blank');
         }
         else if (cmdClean === "clear") {
             output.innerHTML = "";
-            logTerminal("TERMINAL REINICIADO.");
+            logTerminal("TERMINAL RESET.");
         }
         else if (cmdRaw === SECRET_PASS) {
-            logTerminal("CHAVE MESTRA ACEITA.", "#00ff00");
+            logTerminal("ACCESS GRANTED.", "#00ff00");
             if (vault) {
                 vault.style.display = 'block';
                 vault.style.visibility = 'visible';
             }
         } 
         else {
-            logTerminal(`ERRO: COMANDO '${cmdRaw}' INVÁLIDO.`, "#ff3b30");
+            logTerminal(`INVALID COMMAND: '${cmdRaw}'`, "#ff3b30");
             forceLock();
         }
     }
@@ -70,7 +67,13 @@ function checkCommand(event) {
 
 function emergencyWipe() {
     localStorage.clear();
+    sessionStorage.clear();
     window.location.replace("https://www.reuters.com");
+}
+
+function runPrivacyScrub() {
+    localStorage.clear();
+    logTerminal("CLEANUP COMPLETE.");
 }
 
 function toggleStealth() {
