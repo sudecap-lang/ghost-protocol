@@ -17,7 +17,6 @@ function forceLock() {
     }
     clearTimeout(idleTimer);
     clearInterval(noiseInterval);
-    logTerminal("SESSION_TERMINATED: ALL_SHIELDS_OFF", "#ff9500");
 }
 
 function logTerminal(msg, color = "#00ffaa") {
@@ -26,60 +25,76 @@ function logTerminal(msg, color = "#00ffaa") {
     output.scrollTop = output.scrollHeight;
 }
 
-// GERA RUÍDO DE REDE PARA CONFUNDIR RASTREADORES
+// GERA RUÍDO PARA OCULTAR TRÁFEGO REAL
 function startTrafficNoise() {
-    logTerminal("TRAFFIC_NOISE_GENERATOR: START", "#00aaff");
     noiseInterval = setInterval(() => {
         fetch(`https://www.google.com/favicon.ico?q=${Math.random()}`, { mode: 'no-cors' });
-        fetch(`https://www.wikipedia.org/static/apple-touch-icon.png?q=${Math.random()}`, { mode: 'no-cors' });
-    }, 5000); 
+    }, 8000); 
 }
 
 function resetIdleTimer() {
     clearTimeout(idleTimer);
     if (vault && vault.style.display === 'block') {
-        vault.style.filter = "none"; // Remove blur ao interagir
+        vault.style.filter = "none";
         idleTimer = setTimeout(() => {
-            vault.style.filter = "blur(10px)"; // Embaça por segurança
-            logTerminal("VISUAL_SHIELD: BLUR_ACTIVE", "#ff9500");
-        }, 10000); // 10 segundos para embaçar
-        
-        // Timer de 5 min para trancar total
-        setTimeout(() => { if(vault.style.display === 'block') forceLock(); }, 300000);
+            vault.style.filter = "blur(10px)";
+            logTerminal("SHIELD: VISUAL_BLUR_ACTIVE", "#ff9500");
+        }, 15000); // 15 seg para embaçar
     }
 }
 
 window.onload = () => {
     forceLock();
-    logTerminal("GHOST_OS v44.0 - ANONYMITY_OVERDRIVE");
+    logTerminal("GHOST_OS v45.0 - INTERFACE_STABLE");
     document.addEventListener('touchstart', resetIdleTimer);
     document.addEventListener('click', resetIdleTimer);
 };
 
-// --- ACTION FUNCTIONS ---
+// --- FUNÇÕES DOS BOTÕES (CORRIGIDAS) ---
 
 async function runNetworkVerify() {
-    logTerminal("PROBING_ANONYMITY_TUNNEL...", "#00aaff");
+    logTerminal("VERIFYING_CONNECTION...", "#00aaff");
     try {
         await fetch(`https://test.nextdns.io/?t=${Date.now()}`, { mode: 'no-cors' });
-        logTerminal("ANONYMITY_STATUS: ENCRYPTED", "#34c759");
+        logTerminal("STATUS: SECURE_TUNNEL_ACTIVE", "#34c759");
     } catch (e) {
-        logTerminal("ANONYMITY_STATUS: COMPROMISED", "#ff3b30");
+        logTerminal("STATUS: CONNECTION_FAILED", "#ff3b30");
     }
 }
 
 function openLogs() {
-    logTerminal("FETCHING_SECURE_LOGS...");
+    logTerminal("ACCESSING_LOG_SERVER...");
     window.open(`https://my.nextdns.io/${NEXT_DNS_ID}/logs`, '_blank');
+}
+
+function clearTerminal() {
+    output.innerHTML = "";
+    logTerminal("TERMINAL_FLUSHED.");
+}
+
+function runPrivacyScrub() {
+    localStorage.clear();
+    sessionStorage.clear();
+    logTerminal("PRIVACY_SCRUB: MEMORY_PURGED", "#00ff00");
+}
+
+function toggleStealth() {
+    if (document.body.style.filter.includes("brightness")) {
+        document.body.style.filter = "none";
+        logTerminal("GHOST_MODE: DISABLED");
+    } else {
+        document.body.style.filter = "brightness(0.5) contrast(1.2)";
+        logTerminal("GHOST_MODE: ENABLED", "#34c759");
+    }
 }
 
 function emergencyWipe() {
     localStorage.clear();
-    logTerminal("WIPING_ALL_TRACES...", "#ff3b30");
+    logTerminal("SUDO_WIPE_EXECUTED", "#ff3b30");
     setTimeout(() => { window.location.replace("https://www.reuters.com"); }, 300);
 }
 
-// --- ACCESS LOGIC ---
+// --- LÓGICA DE ACESSO ---
 
 function checkCommand(event) {
     if (event.key === 'Enter') {
@@ -88,7 +103,7 @@ function checkCommand(event) {
         input.value = '';
 
         if (cmdRaw === SECRET_PASS) {
-            logTerminal("AUTH_SUCCESS: PRIVACY_LAYERS_ON", "#00ff00");
+            logTerminal("AUTH_SUCCESS: ACCESS_GRANTED", "#00ff00");
             if (vault) {
                 vault.style.display = 'block';
                 vault.style.visibility = 'visible';
@@ -98,15 +113,15 @@ function checkCommand(event) {
         } 
         else if (cmdRaw === DURESS_PASS) {
             logTerminal("AUTH_SUCCESS: GUEST_MODE", "#00ff00");
-            localStorage.clear();
+            runPrivacyScrub();
             if (vault) {
-                vault.innerHTML = "<div style='padding:20px; color:#444;'>Secure Session: No data found.</div>";
+                vault.innerHTML = "<div style='padding:20px; color:#555;'>No data found.</div>";
                 vault.style.display = 'block';
                 vault.style.visibility = 'visible';
             }
         }
         else {
-            logTerminal("AUTH_FAILURE: ACCESS_DENIED", "#ff3b30");
+            logTerminal("AUTH_ERR: ACCESS_DENIED", "#ff3b30");
             forceLock();
         }
     }
