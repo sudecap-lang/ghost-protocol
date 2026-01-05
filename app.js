@@ -14,16 +14,20 @@ function logTerminal(msg) {
 function checkCommand(event) {
     if (event.key === 'Enter') {
         const input = document.getElementById('command-input');
-        const cmd = input.value.toLowerCase();
+        const cmd = input.value; // Removido toLowerCase para aceitar sua senha real
         input.value = '';
 
-        if (cmd === SECRET_PASS) {
-            logTerminal("> ACCESS_GRANTED: VAULT_OPENED");
-            // Aqui você pode mostrar elementos escondidos se desejar
-        } else if (cmd === "logs") {
+        // Comandos de sistema (em minúsculas)
+        if (cmd.toLowerCase() === "logs") {
             logTerminal("> OPENING_SURVEILLANCE_RECORDS...");
             window.open(`https://my.nextdns.io/${NEXT_DNS_ID}/logs`, '_blank');
-        } else {
+        } 
+        // Verificação da Senha Mestra (Exata)
+        else if (cmd === SECRET_PASS) {
+            logTerminal("> ACCESS_GRANTED: VAULT_OPENED");
+            document.getElementById('secret-vault').style.display = 'block';
+        } 
+        else {
             logTerminal("> AUTH_FAILURE: INVALID_CREDENTIALS");
         }
     }
@@ -43,7 +47,10 @@ function toggleStealth() {
 
 function emergencyWipe() {
     logTerminal("> PANIC_PROTOCOL: DESTROYING_DATA...");
+    localStorage.clear();
+    sessionStorage.clear();
     window.location.replace("https://www.reuters.com");
 }
 
+// Inicialização
 logTerminal("> SYSTEM_ONLINE. TARGET_ID: 6DDBFB.");
